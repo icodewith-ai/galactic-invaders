@@ -1,3 +1,5 @@
+![Galatic Invaders](./assets/galactic-invaders.png "Galatic Invaders")
+
 # Galactic Invaders
 
 A 2D "retro style" space shooter game built with HTML, CSS, and JavaScript.<br>
@@ -45,6 +47,9 @@ This game was developed using a variety of tools including:
 - [Cursor](https://www.cursor.com/) (using various models)
 - ChatGPT
 - Git / GitHub
+
+## AI Prompts
+I kicked off the prompting with: “Build a 2D space shooter game.” Two days later, I was deep into the project. You can check out a [snapshot of my prompts](./assets/first-couple-of-days-prompts.md) from those first couple of days. I’m still refining the game—it’s a work in progress. There’s no such thing as “one-shot prompting” to get results like this. You have to put in the work and iterate.
 
 ## License
 This project is open source and available for personal and educational use. Enjoy the game and feel free [contact me](mailto:marcelo@redpillbluepillstudios.com) with updates, bugs or feedback! 🚀 
