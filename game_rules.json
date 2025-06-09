@@ -16,6 +16,6 @@
     "spawnIntervalMin": 40,
     "spawnIntervalStep": 15
   },
-  "startingLives": 10,
+  "startingLives": 3,
   "alienSpeed": 1.0
 } 
