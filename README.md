@@ -1,6 +1,6 @@
 # Galactic Invaders
 
-A modern 2D space shooter game built with Three.js, featuring smooth gameplay, engaging mechanics, and retro-inspired visuals.
+A modern 2D space shooter game built with HTML, CSS, and JavaScript, featuring smooth gameplay, engaging mechanics, and retro-inspired visuals.
 
 **By Marcelo Lewin**
 
@@ -36,7 +36,7 @@ This game was created using Vibe Coding techniques and AI-assisted development, 
 
 ## Technologies Used
 
-- Three.js for 2D rendering
+- PixiJS for 2D rendering (via CDN)
 - HTML5 Audio for sound effects
 - Modern JavaScript (ES6+)
 - CSS3 for styling
