@@ -1,0 +1,110 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#arcade-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 12px solid #ffcc00;
+    border-radius: 32px;
+    box-shadow: 0 0 40px 8px #222, 0 0 0 8px #333 inset;
+    padding: 0;
+}
+
+#game-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 800px;
+    height: 600px;
+    background: #111;
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#game-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#hud {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #fff;
+    font-size: 24px;
+    z-index: 1;
+}
+
+#score, #lives {
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+#score-value, #lives-value {
+    display: inline-block;
+    transition: transform 0.2s cubic-bezier(.68,-0.55,.27,1.55);
+}
+.hud-pop {
+    transform: scale(1.6);
+}
+
+#gameover-container {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background: rgba(0,0,0,0.0);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#restart-btn {
+    font-size: 2rem;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);
+    color: #fff;
+    border: none;
+    border-radius: 2rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 24px;
+    display: inline-block;
+}
+#restart-btn:hover {
+    background: linear-gradient(90deg, #8f94fb 0%, #4e54c8 100%);
+    transform: scale(1.07);
+}
+
+#nukes {
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+} 

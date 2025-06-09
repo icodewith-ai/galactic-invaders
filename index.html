@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactic Invaders</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div id="arcade-frame">
+        <div id="game-container">
+            <div id="hud">
+                <div id="score">Score: <span id="score-value">0</span></div>
+                <div id="lives">Lives: <span id="lives-value">3</span></div>
+                <div id="nukes">Nukes: <span id="nukes-value">0</span></div>
+            </div>
+            <div id="gameover-container" style="display:none;position:absolute;top:0;left:0;z-index:10;justify-content:center;align-items:center;flex-direction:column;">
+                <div id="gameover-text" style="color:#fff;font-size:64px;font-weight:bold;text-shadow:2px 2px 8px #000;margin-bottom:32px;">GAME OVER</div>
+                <button id="restart-btn">Restart</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/game.js"></script>
+</body>
+</html> 
