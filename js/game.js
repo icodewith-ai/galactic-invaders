@@ -135,7 +135,7 @@ window.addEventListener('keydown', (e) => {
         useNuke();
     }
     // If game has not started yet, any key press will start it
-    if (!gameStarted && e.key) {
+    if (!gameStarted && (e.key === 'Enter' || e.key === 'Return')) {
         gameStarted = true;
         hideTitleScreen();
     }
@@ -346,7 +346,7 @@ function showTitleScreen() {
     titleScreen.addChild(inst);
 
     const promptStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 24, fontStyle: 'italic' });
-    const prompt = new PIXI.Text('Press Any Key to Start', promptStyle);
+    const prompt = new PIXI.Text('Press [Enter] to Start', promptStyle);
     prompt.anchor.set(0.5);
     prompt.x = GAME_WIDTH / 2;
     prompt.y = inst.y + 80; // Extra space above prompt
