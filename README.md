@@ -2,8 +2,9 @@
 
 # Galactic Invaders
 
-A 2D "retro style" space shooter game built with HTML, CSS, and JavaScript.<br>
-**By Marcelo Lewin**
+>A 2D "retro style" space shooter game built with HTML, CSS, and JavaScript.
+> 
+> **By Marcelo Lewin**
 
 ## Gameplay
 Your mission is to protect your city, trying to stop waves of aliens from destroying it—or you. You can shoot them down, get temporary rapid-fire during bonus time, and unlock powerful nukes at certain score levels. The goal is simple: stay alive and protect the city.
