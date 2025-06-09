@@ -60,9 +60,9 @@ window.addEventListener('keyup', (e) => {
 });
 
 // Sound effects
-const shootSound = new Audio('../assets/shoot.wav');
-const explosionSound = new Audio('../assets/explosion.wav');
-const loseLifeSound = new Audio('../assets/lose_life.wav');
+const shootSound = new Audio('./assets/shoot.wav');
+const explosionSound = new Audio('./assets/explosion.wav');
+const loseLifeSound = new Audio('./assets/lose_life.wav');
 
 function playShoot() { shootSound.currentTime = 0; shootSound.play(); }
 function playExplosion() { explosionSound.currentTime = 0; explosionSound.play(); }
