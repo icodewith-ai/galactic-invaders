@@ -1,5 +1,5 @@
-import * as PIXI from 'pixi.js';
-import { GlowFilter } from '@pixi/filter-glow';
+const PIXI = window.PIXI;
+const GlowFilter = PIXI.filters.GlowFilter;
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
