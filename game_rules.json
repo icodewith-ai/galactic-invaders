@@ -19,7 +19,7 @@
   "startingLives": 3,
   "alienSpeed": 1.0,
   "buildings": {
-    "min": 1,
-    "max": 6
+    "min": 4,
+    "max": 8
   }
 } 

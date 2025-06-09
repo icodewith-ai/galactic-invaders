@@ -18,7 +18,7 @@ const PLAYER_WIDTH = 60;
 const PLAYER_HEIGHT = 30;
 const PLAYER_SPEED = 7;
 const PLAYER_MIN_Y = GAME_HEIGHT / 2;
-const PLAYER_MAX_Y = GAME_HEIGHT - PLAYER_HEIGHT / 2;
+const PLAYER_MAX_Y = GAME_HEIGHT - 80 - PLAYER_HEIGHT / 2; // Player cannot go below the top of the city base
 const player = new PIXI.Graphics();
 // Draw triangle ship
 player.beginFill(0x00ff00);
@@ -28,7 +28,7 @@ player.lineTo(PLAYER_WIDTH/2, PLAYER_HEIGHT/2); // bottom right
 player.lineTo(0, -PLAYER_HEIGHT/2); // back to top
 player.endFill();
 player.x = GAME_WIDTH / 2;
-player.y = GAME_HEIGHT - 50;
+player.y = PLAYER_MAX_Y; // Position player above the city base
 app.stage.addChild(player);
 
 // Input state
@@ -471,7 +471,7 @@ function startGame() {
         restartBtn.style.display = 'none';
         // Reset player position
         player.x = GAME_WIDTH / 2;
-        player.y = GAME_HEIGHT - 50;
+        player.y = PLAYER_MAX_Y; // Position player above the city base
         // Reset difficulty
         difficultyLevel = 0;
         currentSpawnInterval = GAME_RULES.difficulty.spawnIntervalStart;
