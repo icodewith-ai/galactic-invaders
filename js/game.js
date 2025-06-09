@@ -13,6 +13,22 @@ const app = new PIXI.Application({
 const gameContainer = document.getElementById('game-container');
 gameContainer.appendChild(app.view);
 
+// Draw a simple city/base at the bottom of the screen
+const city = new PIXI.Graphics();
+city.clear();
+city.beginFill(0x8888ff);
+city.drawRect(0, GAME_HEIGHT - 30, GAME_WIDTH, 30); // Main base spans full width
+city.endFill();
+// Add some buildings spaced across the width
+city.beginFill(0xcccccc);
+city.drawRect(40, GAME_HEIGHT - 60, 40, 30);
+city.drawRect(160, GAME_HEIGHT - 50, 30, 20);
+city.drawRect(320, GAME_HEIGHT - 65, 50, 35);
+city.drawRect(480, GAME_HEIGHT - 55, 35, 25);
+city.drawRect(650, GAME_HEIGHT - 60, 60, 30);
+city.endFill();
+app.stage.addChild(city);
+
 // Player setup
 const PLAYER_WIDTH = 60;
 const PLAYER_HEIGHT = 30;
