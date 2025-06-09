@@ -60,11 +60,11 @@ const cityBase = new PIXI.Graphics();
 const playerGlowFilter = new GlowFilter({
     color: 0x00ff00, // Default green glow
     distance: 20,
-    outerStrength: 0.5, // Initial low strength, will be animated
+    outerStrength: 0.5,
     innerStrength: 0.5,
     quality: 0.5
 });
-player.filters = [playerGlowFilter]; // Assign the filter once
+// player.filters = [playerGlowFilter]; // Commented out to prevent default glow
 
 // Glow breathing variables (global)
 let glowBreathingFactor = 0.5; // Current outer strength
@@ -86,11 +86,31 @@ const ALIEN_COLORS = [0xff3333, 0x33ff33, 0x3333ff, 0xffff33, 0xff33ff, 0x33ffff
 const TOUGH_ALIEN_COLOR = 0x9933ff;
 
 // Player setup (drawing only, position set in resetGameState)
-player.beginFill(0x00ff00);
-player.moveTo(0, -PLAYER_HEIGHT/2); // top
-player.lineTo(-PLAYER_WIDTH/2, PLAYER_HEIGHT/2); // bottom left
-player.lineTo(PLAYER_WIDTH/2, PLAYER_HEIGHT/2); // bottom right
-player.lineTo(0, -PLAYER_HEIGHT/2); // back to top
+player.beginFill(0x0055FF); // Main body color (blue)
+// Main body of the ship (pixelated, blocky)
+player.drawRect(-PLAYER_WIDTH / 4, -PLAYER_HEIGHT / 2, PLAYER_WIDTH / 2, PLAYER_HEIGHT); // Central vertical block
+player.drawRect(-PLAYER_WIDTH / 2, 0, PLAYER_WIDTH, PLAYER_HEIGHT / 4); // Horizontal base block
+player.endFill();
+
+// Wings (lighter blue, blocky)
+player.beginFill(0x3399FF); // Lighter blue for wings
+player.drawRect(-PLAYER_WIDTH * 0.7, -PLAYER_HEIGHT / 4, PLAYER_WIDTH * 0.2, PLAYER_HEIGHT / 2); // Left wing
+player.drawRect(PLAYER_WIDTH * 0.5, -PLAYER_HEIGHT / 4, PLAYER_WIDTH * 0.2, PLAYER_HEIGHT / 2); // Right wing
+player.endFill();
+
+// Cockpit (dark grey/black - keep this color for contrast)
+player.beginFill(0x333333);
+player.drawRect(-PLAYER_WIDTH * 0.15, -PLAYER_HEIGHT * 0.4, PLAYER_WIDTH * 0.3, PLAYER_HEIGHT * 0.2); // Cockpit rectangle
+player.endFill();
+
+// Thrusters (darker shades, at the back)
+player.beginFill(0x555555); // Thruster casing
+player.drawRect(-PLAYER_WIDTH * 0.15, PLAYER_HEIGHT * 0.5, PLAYER_WIDTH * 0.3, PLAYER_HEIGHT * 0.2); // Central thruster block
+player.endFill();
+
+player.beginFill(0x000000); // Thruster exhausts
+player.drawRect(-PLAYER_WIDTH * 0.1, PLAYER_HEIGHT * 0.6, PLAYER_WIDTH * 0.08, PLAYER_HEIGHT * 0.1); // Left exhaust
+player.drawRect(PLAYER_WIDTH * 0.02, PLAYER_HEIGHT * 0.6, PLAYER_WIDTH * 0.08, PLAYER_HEIGHT * 0.1); // Right exhaust
 player.endFill();
 
 // Starfield setup (drawing only, position set in resetGameState)
@@ -106,8 +126,38 @@ for (let i = 0; i < STAR_COUNT; i++) {
 }
 
 // City and Buildings setup (drawing only, position set in resetGameState)
-cityBase.beginFill(0xFF00FF);
-cityBase.drawRect(0, GAME_HEIGHT - 30, GAME_WIDTH, 30); // Main base spans full width
+cityBase.clear();
+cityBase.beginFill(0xFF00FF); // Main pink base color
+cityBase.drawRect(0, GAME_HEIGHT - 30, GAME_WIDTH, 30);
+cityBase.endFill();
+
+// Add structured pixel lines for texture (less columns, more defined)
+// Darker pink/magenta vertical lines
+cityBase.beginFill(0xCC00CC); // Darker pink
+for (let x = 0; x < GAME_WIDTH; x += 15) {
+    cityBase.drawRect(x, GAME_HEIGHT - 30, 7, 30);
+}
+cityBase.endFill();
+
+// Lighter pink/magenta vertical lines, offset
+cityBase.beginFill(0xFF33FF); // Lighter pink
+for (let x = 7; x < GAME_WIDTH; x += 15) {
+    cityBase.drawRect(x, GAME_HEIGHT - 25, 4, 25);
+}
+cityBase.endFill();
+
+// Horizontal accent lines (e.g., a darker line near the top)
+cityBase.beginFill(0x990099); // Even darker pink/purple
+for (let x = 0; x < GAME_WIDTH; x += 10) {
+    cityBase.drawRect(x, GAME_HEIGHT - 30, 5, 2); // Thin horizontal line at the top
+}
+cityBase.endFill();
+
+cityBase.beginFill(0xCC33CC); // Medium pink/purple
+for (let x = 5; x < GAME_WIDTH; x += 10) {
+    cityBase.drawRect(x, GAME_HEIGHT - 28, 3, 1); // Another thin horizontal line
+}
+cityBase.endFill();
 
 // Sound effects (loaded here, or could be preloaded once globally)
 const shootSound = new Audio('./assets/shoot.wav');
@@ -247,14 +297,43 @@ function spawnAlien() {
     const speedY = ((Math.random() * 0.7 + 0.5 + difficultyLevel * 0.2) * (isTough ? 0.7 : 1)) * GAME_RULES.alienSpeed;
     const alien = new PIXI.Graphics();
     alien.beginFill(color);
-    alien.drawEllipse(0, 0, width/2, height/2);
+    // Main body: larger rectangular base, smaller rectangular top
+    alien.drawRect(-width * 0.4, -height * 0.3, width * 0.8, height * 0.6); // Main rectangular body part
+    alien.drawRect(-width * 0.3, -height * 0.5, width * 0.6, height * 0.2); // Top part of body, slightly narrower
     alien.endFill();
-    alien.beginFill(0x99ccff);
-    alien.drawEllipse(0, -height/4, width/4, height/6);
+
+    // Eyes: stalks and eyeballs
+    // Left eye
+    alien.beginFill(color); // Stalk color same as body
+    alien.drawRect(-width * 0.3, -height * 0.6, width * 0.08, height * 0.15); // Left stalk
     alien.endFill();
-    alien.beginFill(0x000000);
-    alien.drawCircle(-width/8, 0, 3);
-    alien.drawCircle(width/8, 0, 3);
+    alien.beginFill(0xFFFFFF); // White eyeball
+    alien.drawRect(-width * 0.26 - (width * 0.08 / 2), -height * 0.6 - (width * 0.08 / 2), width * 0.16, width * 0.16); // Left eyeball (square)
+    alien.endFill();
+    alien.beginFill(0x000000); // Black pupil
+    alien.drawRect(-width * 0.26 - (width * 0.04 / 2), -height * 0.6 - (width * 0.04 / 2), width * 0.08, width * 0.08); // Left pupil (square)
+    alien.endFill();
+
+    // Right eye
+    alien.beginFill(color); // Stalk color same as body
+    alien.drawRect(width * 0.22, -height * 0.6, width * 0.08, height * 0.15); // Right stalk
+    alien.endFill();
+    alien.beginFill(0xFFFFFF); // White eyeball
+    alien.drawRect(width * 0.26 - (width * 0.08 / 2), -height * 0.6 - (width * 0.08 / 2), width * 0.16, width * 0.16); // Right eyeball (square)
+    alien.endFill();
+    alien.beginFill(0x000000); // Black pupil
+    alien.drawRect(width * 0.26 - (width * 0.04 / 2), -height * 0.6 - (width * 0.04 / 2), width * 0.08, width * 0.08); // Right pupil (square)
+    alien.endFill();
+
+    // Arms/Claws: simple rectangles for now, positioned on the sides
+    alien.beginFill(color);
+    alien.drawRect(-width * 0.6, -height * 0.1, width * 0.2, height * 0.3); // Left arm (vertical)
+    alien.drawRect(-width * 0.75, -height * 0.25, width * 0.15, height * 0.1); // Left claw (horizontal, slightly angled)
+    alien.endFill();
+
+    alien.beginFill(color);
+    alien.drawRect(width * 0.4, -height * 0.1, width * 0.2, height * 0.3); // Right arm (vertical)
+    alien.drawRect(width * 0.6, -height * 0.25, width * 0.15, height * 0.1); // Right claw (horizontal, slightly angled)
     alien.endFill();
     alien.x = Math.random() * (GAME_WIDTH - width) + width/2;
     alien.y = 40;
@@ -392,6 +471,8 @@ function resetGameState() {
     }
     buildings.length = 0; // Clear building array
 
+    const buildingColors = [0xFFFFFF, 0xFF00FF, 0x00FF00]; // White, Pink, Green
+
     const minBuildings = GAME_RULES.buildings.min;
     const maxBuildings = GAME_RULES.buildings.max;
     const numBuildings = Math.floor(Math.random() * (maxBuildings - minBuildings + 1)) + minBuildings;
@@ -414,7 +495,8 @@ function resetGameState() {
         usedRanges.push({start: x, end: x + width});
 
         const building = new PIXI.Graphics();
-        building.beginFill(0xFFFFFF); // Changed building color to White
+        const randomBuildingColor = buildingColors[Math.floor(Math.random() * buildingColors.length)];
+        building.beginFill(randomBuildingColor);
         building.drawRect(0, 0, width, height);
         building.endFill();
 
@@ -497,7 +579,7 @@ function resetGameState() {
         building.x = x;
         building.y = GAME_HEIGHT - 30 - height;
         building.filters = [new GlowFilter({
-            color: 0xFFFFFF, // White glow color
+            color: randomBuildingColor, // Use the random building color for the glow
             distance: 10,
             outerStrength: 1,
             innerStrength: 0.2,
@@ -573,13 +655,18 @@ function useNuke() {
 
 function updateRapidFireGlow() {
     if (rapidFireActive) {
-        // Change existing glow color to white when rapid fire is active
-        playerGlowFilter.color = 0xFFFFFF;
+        // Apply filter if not already applied, and set color to white
+        if (!player.filters || !player.filters.includes(playerGlowFilter)) {
+            player.filters = [playerGlowFilter];
+        }
+        playerGlowFilter.color = 0xFFFFFF; // Change existing glow color to white
         glowBreathingFactor = GLOW_MIN_STRENGTH; // Start breathing from min strength
     } else {
-        // Revert to default green glow when rapid fire is inactive
-        playerGlowFilter.color = 0x00ff00; // Default green glow
-        // The outerStrength will be controlled by the breathing animation in the ticker
+        // Remove filter if rapid fire is inactive
+        if (player.filters && player.filters.includes(playerGlowFilter)) {
+            player.filters = player.filters.filter(f => f !== playerGlowFilter);
+        }
+        // playerGlowFilter.color = 0x00ff00; // No need to reset color if filter is removed
     }
 }
 
@@ -752,16 +839,18 @@ app.ticker.add(() => {
     }
 
     // Player glow breathing animation (runs continuously)
-    glowBreathingFactor += glowBreathingDirection * GLOW_BREATHING_SPEED;
+    if (rapidFireActive) {
+        glowBreathingFactor += glowBreathingDirection * GLOW_BREATHING_SPEED;
 
-    if (glowBreathingFactor > GLOW_MAX_STRENGTH) {
-        glowBreathingFactor = GLOW_MAX_STRENGTH;
-        glowBreathingDirection = -1;
-    } else if (glowBreathingFactor < GLOW_MIN_STRENGTH) {
-        glowBreathingFactor = GLOW_MIN_STRENGTH;
-        glowBreathingDirection = 1;
+        if (glowBreathingFactor > GLOW_MAX_STRENGTH) {
+            glowBreathingFactor = GLOW_MAX_STRENGTH;
+            glowBreathingDirection = -1;
+        } else if (glowBreathingFactor < GLOW_MIN_STRENGTH) {
+            glowBreathingFactor = GLOW_MIN_STRENGTH;
+            glowBreathingDirection = 1;
+        }
+        playerGlowFilter.outerStrength = glowBreathingFactor;
     }
-    playerGlowFilter.outerStrength = glowBreathingFactor;
 
     // Rapid fire logic
     if (rapidFireActive && keys[' ']) {
