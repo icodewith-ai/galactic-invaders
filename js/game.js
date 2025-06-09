@@ -225,19 +225,36 @@ function showTitleScreen() {
     title.x = GAME_WIDTH / 2;
     title.y = GAME_HEIGHT / 2 - 100;
     titleScreen.addChild(title);
-    // Instructions
-    const instStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 28 });
-    const inst = new PIXI.Text('Arrow keys to move\nSpace to shoot', instStyle);
+    // Credit
+    const creditStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 24, fontStyle: 'italic', dropShadow: true, dropShadowDistance: 2, dropShadowColor: '#000' });
+    const credit = new PIXI.Text('By Marcelo Lewin', creditStyle);
+    credit.anchor.set(0.5);
+    credit.x = GAME_WIDTH / 2;
+    credit.y = title.y + 50;
+    titleScreen.addChild(credit);
+    // Instructions Header (styled like title, but smaller)
+    const headerStyle = new PIXI.TextStyle({
+        fill: '#fff', fontSize: 28, fontWeight: 'bold', stroke: '#00f', strokeThickness: 8, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#000'
+    });
+    const header = new PIXI.Text('Instructions', headerStyle);
+    header.anchor.set(0.5);
+    header.x = GAME_WIDTH / 2;
+    header.y = credit.y + 70;
+    titleScreen.addChild(header);
+    // Instructions Body (add line space below header)
+    const instStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 20, fontWeight: 'normal' });
+    const instText = '← ↑ → ↓ to move\n[Space] to shoot\n[A] to use nuke';
+    const inst = new PIXI.Text(instText, instStyle);
     inst.anchor.set(0.5);
     inst.x = GAME_WIDTH / 2;
-    inst.y = GAME_HEIGHT / 2;
+    inst.y = header.y + 55; // Extra space below header
     titleScreen.addChild(inst);
-    // Prompt
+    // Prompt (add extra line space above)
     const promptStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 24, fontStyle: 'italic' });
-    const prompt = new PIXI.Text('Press Space to Start', promptStyle);
+    const prompt = new PIXI.Text('Press Any Key to Start', promptStyle);
     prompt.anchor.set(0.5);
     prompt.x = GAME_WIDTH / 2;
-    prompt.y = GAME_HEIGHT / 2 + 80;
+    prompt.y = inst.y + 80; // Extra space above prompt
     titleScreen.addChild(prompt);
     app.stage.addChild(titleScreen);
 }
@@ -404,9 +421,9 @@ app.ticker.add(() => {
     }
 });
 
-// Listen for spacebar to start game
+// Listen for any key to start game
 window.addEventListener('keydown', (e) => {
-    if (!gameStarted && e.key === ' ') {
+    if (!gameStarted) {
         gameStarted = true;
         hideTitleScreen();
         return;
