@@ -69,7 +69,7 @@ let glowBreathingFactor = 0.5; // Current outer strength
 let glowBreathingDirection = 1; // 1 for increasing, -1 for decreasing
 const GLOW_BREATHING_SPEED = 0.03; // Speed of the pulsation
 const GLOW_MIN_STRENGTH = 0.8; // Minimum outer strength
-const GLOW_MAX_STRENGTH = 2.5; // Maximum outer strength
+const GLOW_MAX_STRENGTH = 5; // Maximum outer strength
 
 // Game Constants (can be moved to GAME_RULES if needed)
 const PLAYER_WIDTH = 60;
@@ -215,6 +215,12 @@ function updateDifficulty() {
     if (nukeThreshold > Math.floor(lastNukeScore / GAME_RULES.nukeThreshold)) {
         nukes++;
         updateNukesHUD();
+        // Add glowing effect to the nukes label here
+        const nukesLabel = document.getElementById('nukes'); // Target the label div
+        nukesLabel.classList.add('nukes-glow');
+        setTimeout(() => {
+            nukesLabel.classList.remove('nukes-glow');
+        }, 3000); // Glow for 3 seconds
         lastNukeScore = score;
     }
 }
@@ -276,7 +282,8 @@ function updateLivesHUD() {
 }
 
 function updateNukesHUD() {
-    document.getElementById('nukes-value').textContent = nukes;
+    const nukesValue = document.getElementById('nukes-value');
+    nukesValue.textContent = nukes;
     animateHudPop('nukes-value');
 }
 
@@ -559,8 +566,8 @@ function useNuke() {
 
 function updateRapidFireGlow() {
     if (rapidFireActive) {
-        // Change existing glow color to red when rapid fire is active
-        playerGlowFilter.color = 0xFF0000;
+        // Change existing glow color to white when rapid fire is active
+        playerGlowFilter.color = 0xFFFFFF;
         glowBreathingFactor = GLOW_MIN_STRENGTH; // Start breathing from min strength
     } else {
         // Revert to default green glow when rapid fire is inactive

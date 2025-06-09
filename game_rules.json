@@ -4,7 +4,7 @@
     "toughAlien": 300,
     "smallAlienBonus": 20
   },
-  "nukeThreshold": 2000,
+  "nukeThreshold": 1000,
   "rapidFireThreshold": 1000,
   "rapidFireDuration": 5,
   "alienHp": {

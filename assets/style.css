@@ -111,6 +111,11 @@ body {
     transform: scale(1.2);
 }
 
+.nukes-glow {
+    box-shadow: 0 0 5px 2px #FFFFFF, 0 0 10px 4px #FFFFFF; /* Thinner white glow */
+    transition: box-shadow 0.3s ease-out;
+}
+
 #gameover-container {
     display: none;
     position: absolute;
