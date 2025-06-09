@@ -5,7 +5,7 @@
     "smallAlienBonus": 20
   },
   "nukeThreshold": 3000,
-  "rapidFireScore": 5000,
+  "rapidFireThreshold": 5000,
   "alienHp": {
     "normal": 1,
     "tough": 2
@@ -16,6 +16,6 @@
     "spawnIntervalMin": 40,
     "spawnIntervalStep": 15
   },
-  "startingLives": 3 ,
+  "startingLives": 10,
   "alienSpeed": 1.0
 } 

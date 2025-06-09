@@ -425,7 +425,7 @@ function startGame() {
 
         updateDifficulty();
         // Rapid fire unlock check
-        const currentThreshold = Math.floor(score / GAME_RULES.rapidFireScore);
+        const currentThreshold = Math.floor(score / GAME_RULES.rapidFireThreshold);
         if (currentThreshold > lastRapidFireThreshold) {
             rapidFireActive = true;
             rapidFireTimerSeconds = RAPID_FIRE_DURATION;
