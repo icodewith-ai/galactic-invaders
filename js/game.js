@@ -260,7 +260,7 @@ function startGame() {
         const inst = new PIXI.Text(instText, instStyle);
         inst.anchor.set(0.5);
         inst.x = GAME_WIDTH / 2;
-        inst.y = header.y + 55; // Extra space below header
+        inst.y = header.y + 70; // Increased space below header
         titleScreen.addChild(inst);
         // Prompt (add extra line space above)
         const promptStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 24, fontStyle: 'italic' });
