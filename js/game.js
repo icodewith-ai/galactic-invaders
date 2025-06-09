@@ -51,6 +51,7 @@ async function loadGameRules() {
     const response = await fetch('./game_rules.json');
     GAME_RULES = await response.json();
     startGame();
+    document.getElementById('lives-value').textContent = GAME_RULES.startingLives;
 }
 
 function startGame() {
@@ -107,7 +108,7 @@ function startGame() {
     const ALIEN_SPAWN_INTERVAL = 120; // frames
     let alienSpawnTimer = 0;
     let score = 0;
-    let lives = 3;
+    let lives = GAME_RULES.startingLives;
 
     // Explosions array
     const explosions = [];
@@ -149,8 +150,8 @@ function startGame() {
         const width = isTough ? ALIEN_WIDTH * 1.3 : ALIEN_WIDTH;
         const height = isTough ? ALIEN_HEIGHT * 1.3 : ALIEN_HEIGHT;
         // Increase speed with difficulty
-        const speedX = (Math.random() * 2 + 1.5 + difficultyLevel * 0.5) * (Math.random() < 0.5 ? 1 : -1) * (isTough ? 0.7 : 1);
-        const speedY = (Math.random() * 0.7 + 0.5 + difficultyLevel * 0.2) * (isTough ? 0.7 : 1);
+        const speedX = ((Math.random() * 2 + 1.5 + difficultyLevel * 0.5) * (Math.random() < 0.5 ? 1 : -1) * (isTough ? 0.7 : 1)) * GAME_RULES.alienSpeed;
+        const speedY = ((Math.random() * 0.7 + 0.5 + difficultyLevel * 0.2) * (isTough ? 0.7 : 1)) * GAME_RULES.alienSpeed;
         const alien = new PIXI.Graphics();
         // UFO body
         alien.beginFill(color);
@@ -463,7 +464,7 @@ function startGame() {
         if (goText) app.stage.removeChild(goText);
         // Reset state
         score = 0;
-        lives = 3;
+        lives = GAME_RULES.startingLives;
         gameOver = false;
         updateScoreHUD();
         updateLivesHUD();
