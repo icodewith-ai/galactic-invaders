@@ -1,4 +1,4 @@
-![Galatic Invaders](./assets/galactic-invaders.png "Galatic Invaders")
+[ ![Galatic Invaders](./assets/galactic-invaders.png "Galatic Invaders") ](https://bymarcelolewin.github.io/Galatic-Invaders/)
 
 # Galactic Invaders
 
@@ -6,7 +6,10 @@ A 2D "retro style" space shooter game built with HTML, CSS, and JavaScript.<br>
 **By Marcelo Lewin**
 
 ## Gameplay
-Your mission is to protect your city, trying to stop waves of aliens from destroying it—or you. You can shoot them down, get temporary rapid-fire during bonus time, and unlock powerful nukes at certain score levels. The goal is simple: stay alive and protect the city
+Your mission is to protect your city, trying to stop waves of aliens from destroying it—or you. You can shoot them down, get temporary rapid-fire during bonus time, and unlock powerful nukes at certain score levels. The goal is simple: stay alive and protect the city.
+
+## Where to Play It
+To play the game, you can either play it [live on the web](https://bymarcelolewin.github.io/Galatic-Invaders/) or clone this repo and run it locally using a web server (since it uses fetch() to load JSON data). If you’re running it locally, make sure to serve it with something like Live Server in VS Code or a simple HTTP server to avoid CORS issues.
 
 ## How to Play
 1. Use the arrow keys to move your spaceship
