@@ -116,7 +116,14 @@ const loseLifeSound = new Audio('./assets/lose_life.wav');
 // Event listeners for input (attached once globally)
 window.addEventListener('keydown', (e) => {
     keys[e.key] = true;
-    if (e.key === 's' || e.key === 'S') {
+    // Map WASD to arrow keys for movement
+    switch(e.key.toLowerCase()) {
+        case 'a': keys['ArrowLeft'] = true; break;
+        case 'd': keys['ArrowRight'] = true; break;
+        case 'w': keys['ArrowUp'] = true; break;
+        case 's': keys['ArrowDown'] = true; break;
+    }
+    if (e.key === 'm' || e.key === 'M') {
         soundOn = !soundOn;
     }
     // Only allow shooting if game started and not game over
@@ -125,7 +132,7 @@ window.addEventListener('keydown', (e) => {
         canShoot = false;
     }
     // Only allow nuke if game started and not game over
-    if (gameStarted && !gameOver && e.key.toLowerCase() === 'n' && nukes > 0) {
+    if (gameStarted && !gameOver && e.key.toLowerCase() === 'q' && nukes > 0) {
         useNuke();
     }
     // If game has not started yet, any key press will start it
@@ -137,6 +144,13 @@ window.addEventListener('keydown', (e) => {
 
 window.addEventListener('keyup', (e) => {
     keys[e.key] = false;
+    // Map WASD to arrow keys for movement
+    switch(e.key.toLowerCase()) {
+        case 'a': keys['ArrowLeft'] = false; break;
+        case 'd': keys['ArrowRight'] = false; break;
+        case 'w': keys['ArrowUp'] = false; break;
+        case 's': keys['ArrowDown'] = false; break;
+    }
     if (e.key === ' ') canShoot = true;
 });
 
@@ -317,7 +331,7 @@ function showTitleScreen() {
     titleScreen.addChild(header);
 
     const instStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 20, fontWeight: 'normal' });
-    const instText = '← ↑ → ↓ Move\n[Space] Shoot\n[N] Use Nuke\n[S] Toggle Sound';
+    const instText = '← ↑ → ↓ Move / WASD\n[Space] Shoot\n[Q] Use Nuke\n[M] Toggle Sound';
     const inst = new PIXI.Text(instText, instStyle);
     inst.anchor.set(0.5);
     inst.x = GAME_WIDTH / 2;

@@ -12,10 +12,10 @@ Your mission is to protect your city, trying to stop waves of aliens from destro
 To play the game, you can either play it [live on the web](https://bymarcelolewin.github.io/Galactic-Invaders/) or clone this repo and run it locally using a web server (since it uses fetch() to load JSON data). If you’re running it locally, make sure to serve it with something like Live Server in VS Code or a simple HTTP server to avoid CORS issues.
 
 ## How to Play
-1. Use the arrow keys to move your spaceship
+1. Use ←, ↑, →, ↓ or [WASD] to move your spaceship
 2. Press \[Space] to shoot
-3. Press \[N] to activate the nuke (when available)
-4. Press \[S] to toggle sound on/off
+3. Press \[Q] to activate the nuke (when available)
+4. Press \[M] to toggle sound on/off
 5. Destroy aliens to earn points
 6. Avoid getting hit by aliens.
 7. Stop the aliens from destroying your city.
@@ -31,10 +31,10 @@ To play the game, you can either play it [live on the web](https://bymarcelolewi
 - Scrolling starfield background for immersive space atmosphere
 
 ## Controls
-- ←, ↑, →, ↓: Move
-- \[Space]: Shoot
-- \[N]: Activate nuke (when available)
-- \[S]: Toggle sound on/off
+- ←, ↑, →, ↓ or \[WASD] : Move
+- \[Space] : Shoot
+- \[Q] : Activate nuke (when available)
+- \[M] : Toggle sound on/off
 
 ## Why I Created It
 This game was created as an experiment in learning Vibe Coding techniques and exploring AI-assisted development tools. I have zero game dev experience, so I figured, if I can, then anyone else can.  I did.  Now you can too!
