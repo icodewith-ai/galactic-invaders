@@ -9,5 +9,13 @@
   "alienHp": {
     "normal": 1,
     "tough": 2
-  }
+  },
+  "difficulty": {
+    "scorePerLevel": 500,
+    "spawnIntervalStart": 120,
+    "spawnIntervalMin": 40,
+    "spawnIntervalStep": 15
+  },
+  "startingLives": 10,
+  "alienSpeed": 1.0
 } 

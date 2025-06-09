@@ -118,10 +118,13 @@ function startGame() {
     let lastNukeScore = 0;
 
     function updateDifficulty() {
-        const newLevel = Math.floor(score / 500);
+        const newLevel = Math.floor(score / GAME_RULES.difficulty.scorePerLevel);
         if (newLevel > difficultyLevel) {
             difficultyLevel = newLevel;
-            currentSpawnInterval = Math.max(40, ALIEN_SPAWN_INTERVAL - difficultyLevel * 15);
+            currentSpawnInterval = Math.max(
+                GAME_RULES.difficulty.spawnIntervalMin,
+                GAME_RULES.difficulty.spawnIntervalStart - difficultyLevel * GAME_RULES.difficulty.spawnIntervalStep
+            );
         }
         // Award a nuke every 3000 points (but only once per threshold)
         const nukeThreshold = Math.floor(score / GAME_RULES.nukeThreshold);
@@ -470,7 +473,7 @@ function startGame() {
         player.y = GAME_HEIGHT - 50;
         // Reset difficulty
         difficultyLevel = 0;
-        currentSpawnInterval = ALIEN_SPAWN_INTERVAL;
+        currentSpawnInterval = GAME_RULES.difficulty.spawnIntervalStart;
         gameoverContainer.style.display = 'none';
         nukes = 0;
         lastNukeScore = 0;
