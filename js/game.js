@@ -381,13 +381,13 @@ function resetGameState() {
         usedRanges.push({start: x, end: x + width});
 
         const building = new PIXI.Graphics();
-        building.beginFill(0x00FFFF); // Changed building color to Cyan
+        building.beginFill(0xFFFFFF); // Changed building color to White
         building.drawRect(0, 0, width, height);
         building.endFill();
         building.x = x;
         building.y = GAME_HEIGHT - 30 - height;
         building.filters = [new GlowFilter({
-            color: 0x00FFFF, // Cyan glow color
+            color: 0xFFFFFF, // White glow color
             distance: 10,
             outerStrength: 1,
             innerStrength: 0.2,
