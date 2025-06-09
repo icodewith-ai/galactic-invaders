@@ -41,6 +41,7 @@ let currentSpawnInterval = 0; // Will be set from GAME_RULES in resetGameState
 
 let gameOver = false;
 let gameStarted = false; // Track if game has started (from title screen)
+let pendingGameOver = false; // Flag to delay game over until explosions finish
 let titleScreen; // Reference to title screen container
 
 // Arrays for game objects (global, but cleared by resetGameState)
@@ -374,6 +375,7 @@ function resetGameState() {
     currentSpawnInterval = GAME_RULES.difficulty.spawnIntervalStart;
     gameOver = false;
     gameStarted = false; // Important for title screen flow
+    pendingGameOver = false; // Reset the pending game over flag
 
     // Reset input state (clear held keys)
     keys = {};
@@ -555,8 +557,8 @@ app.ticker.add(() => {
                 playExplosion();
 
                 if (buildings.length <= 0) {
-                    gameOver = true;
-                    showGameOver();
+                    // Game over pending, wait for explosion to finish
+                    pendingGameOver = true;
                 }
                 break;
             }
@@ -572,9 +574,7 @@ app.ticker.add(() => {
             aliens.splice(i, 1);
             createExplosion(alien.x, alien.y); // Explosion at alien's position
             playExplosion();
-            gameOver = true;
-            showGameOver();
-            break; // No need to check other aliens if game is over
+            break; // No need to check other aliens if this one hit the base
         }
     }
 
@@ -591,6 +591,12 @@ app.ticker.add(() => {
             app.stage.removeChild(exp.gfx);
             explosions.splice(i, 1);
         }
+    }
+
+    // If game over is pending and all explosions have finished, show game over
+    if (pendingGameOver && explosions.length === 0) {
+        gameOver = true;
+        showGameOver();
     }
 
     // Rapid fire logic
