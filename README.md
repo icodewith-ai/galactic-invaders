@@ -19,20 +19,19 @@ This game was created using Vibe Coding techniques and AI-assisted development, 
 ## How to Play
 
 1. Use the arrow keys to move your spaceship
-2. Press SPACE to shoot
-3. Press 'N' to activate the nuke (when available)
-4. Destroy aliens to earn points
-5. Avoid getting hit by aliens or their projectiles
-6. Try to achieve the highest score possible!
+2. Press [Space] to shoot
+3. Press [N] to activate the nuke (when available)
+4. Press [S] to toggle sound on/off
+5. Destroy aliens to earn points
+6. Avoid getting hit by aliens.
+7. Try to achieve the highest score possible!
 
 ## Controls
 
-- ↑: Move up
-- ↓: Move down
-- ←: Move left
-- →: Move right
-- SPACE: Shoot
-- N: Activate nuke (when available)
+- ←, ↑, →, ↓: Move
+- [Space]: Shoot
+- [N]: Activate nuke (when available)
+- [S]: Toggle sound on/off
 
 ## Technologies Used
 

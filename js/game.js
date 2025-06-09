@@ -373,10 +373,14 @@ function startGame() {
             }
         }
 
-        // Check if any alien reaches the bottom (canvas bottom)
+        // Check if any alien collides with the player
         for (let j = aliens.length - 1; j >= 0; j--) {
             const alien = aliens[j];
-            if (alien.y + alien.alienHeight/2 >= GAME_HEIGHT) {
+            // Simple bounding box collision
+            if (
+                Math.abs(alien.x - player.x) < (alien.alienWidth / 2 + PLAYER_WIDTH / 2) &&
+                Math.abs(alien.y - player.y) < (alien.alienHeight / 2 + PLAYER_HEIGHT / 2)
+            ) {
                 app.stage.removeChild(alien);
                 aliens.splice(j, 1);
                 lives--;
