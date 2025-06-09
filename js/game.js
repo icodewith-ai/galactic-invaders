@@ -242,6 +242,11 @@ function updateNukesHUD() {
     animateHudPop('nukes-value');
 }
 
+function updateBuildingsHUD(buildingCount) {
+    document.getElementById('buildings-value').textContent = buildingCount;
+    animateHudPop('buildings-value');
+}
+
 const restartBtn = document.getElementById('restart-btn');
 restartBtn.addEventListener('click', restartGame);
 
@@ -391,6 +396,7 @@ function resetGameState() {
     updateScoreHUD();
     updateLivesHUD();
     updateNukesHUD();
+    updateBuildingsHUD(buildings.length); // Initialize buildings HUD
 
     // Reset player position and glow
     player.x = GAME_WIDTH / 2;
@@ -555,6 +561,7 @@ app.ticker.add(() => {
                 buildings.splice(j, 1);
                 createExplosion(building.x + building.width / 2, building.y + building.height / 2);
                 playExplosion();
+                updateBuildingsHUD(buildings.length); // Update buildings HUD
 
                 if (buildings.length <= 0) {
                     // Game over pending, wait for explosion to finish
