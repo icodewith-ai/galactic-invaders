@@ -7,7 +7,7 @@
   "nukeThreshold": 3000,
   "rapidFireThreshold": 2000,
   "rapidFireDuration": 5,
-  "normalFireCooldown": 15,
+  "normalFireCooldown": 12,
   "alienHp": {
     "normal": 1,
     "tough": 2
