@@ -1,0 +1,13 @@
+{
+  "points": {
+    "normalAlien": 100,
+    "toughAlien": 300,
+    "smallAlienBonus": 20
+  },
+  "nukeThreshold": 3000,
+  "rapidFireScore": 5000,
+  "alienHp": {
+    "normal": 1,
+    "tough": 2
+  }
+} 
