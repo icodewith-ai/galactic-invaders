@@ -26,7 +26,6 @@ const RAPID_FIRE_INTERVAL = 6; // frames between shots when holding
 let rapidFireTimer = 0;
 let rapidFireActive = false;
 let rapidFireTimerSeconds = 0;
-const RAPID_FIRE_DURATION = 10; // seconds
 let lastRapidFireThreshold = 0;
 
 // Game state variables (global, but reset by resetGameState)
@@ -552,9 +551,9 @@ function useNuke() {
 
 function updateRapidFireGlow() {
     if (rapidFireActive) {
-        // Change existing glow color to cyan when rapid fire is active
-        playerGlowFilter.color = 0x00ffff;
-        playerGlowFilter.outerStrength = GLOW_MAX_STRENGTH; // Set to max strength when active
+        // Change existing glow color to red when rapid fire is active
+        playerGlowFilter.color = 0xFF0000;
+        glowBreathingFactor = GLOW_MIN_STRENGTH; // Start breathing from min strength
     } else {
         // Revert to default green glow when rapid fire is inactive
         playerGlowFilter.color = 0x00ff00; // Default green glow
@@ -727,19 +726,17 @@ app.ticker.add(() => {
         showGameOver();
     }
 
-    // Player glow breathing animation (only when rapid fire is not active)
-    if (!rapidFireActive) {
-        glowBreathingFactor += glowBreathingDirection * GLOW_BREATHING_SPEED;
+    // Player glow breathing animation (runs continuously)
+    glowBreathingFactor += glowBreathingDirection * GLOW_BREATHING_SPEED;
 
-        if (glowBreathingFactor > GLOW_MAX_STRENGTH) {
-            glowBreathingFactor = GLOW_MAX_STRENGTH;
-            glowBreathingDirection = -1;
-        } else if (glowBreathingFactor < GLOW_MIN_STRENGTH) {
-            glowBreathingFactor = GLOW_MIN_STRENGTH;
-            glowBreathingDirection = 1;
-        }
-        playerGlowFilter.outerStrength = glowBreathingFactor;
+    if (glowBreathingFactor > GLOW_MAX_STRENGTH) {
+        glowBreathingFactor = GLOW_MAX_STRENGTH;
+        glowBreathingDirection = -1;
+    } else if (glowBreathingFactor < GLOW_MIN_STRENGTH) {
+        glowBreathingFactor = GLOW_MIN_STRENGTH;
+        glowBreathingDirection = 1;
     }
+    playerGlowFilter.outerStrength = glowBreathingFactor;
 
     // Rapid fire logic
     if (rapidFireActive && keys[' ']) {
@@ -753,10 +750,10 @@ app.ticker.add(() => {
     }
 
     updateDifficulty();
-    const currentThreshold = Math.floor(score / GAME_RULES.rapidFireScore); // Use GAME_RULES.rapidFireScore
+    const currentThreshold = Math.floor(score / GAME_RULES.rapidFireThreshold); // Use GAME_RULES.rapidFireThreshold
     if (currentThreshold > lastRapidFireThreshold) {
         rapidFireActive = true;
-        rapidFireTimerSeconds = RAPID_FIRE_DURATION;
+        rapidFireTimerSeconds = GAME_RULES.rapidFireDuration;
         updateRapidFireGlow();
         lastRapidFireThreshold = currentThreshold;
     }
