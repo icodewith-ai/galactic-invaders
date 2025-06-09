@@ -1,4 +1,4 @@
-const PIXI = window.PIXI;
+// Only declare GlowFilter from PIXI.filters, do not redeclare PIXI
 const GlowFilter = PIXI.filters.GlowFilter;
 
 const GAME_WIDTH = 800;

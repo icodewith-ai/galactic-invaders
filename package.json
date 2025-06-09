@@ -7,10 +7,6 @@
     "start": "vite",
     "build": "vite build"
   },
-  "dependencies": {
-    "@pixi/filter-glow": "^5.2.1",
-    "pixi.js": "^7.2.4"
-  },
   "devDependencies": {
     "vite": "^5.1.4"
   }
