@@ -277,7 +277,7 @@ function showTitleScreen() {
     const title = new PIXI.Text('Galactic Invaders', titleStyle);
     title.anchor.set(0.5);
     title.x = GAME_WIDTH / 2;
-    title.y = GAME_HEIGHT / 2 - 100;
+    title.y = GAME_HEIGHT / 2 - 175;
     titleScreen.addChild(title);
 
     const creditStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 24, fontStyle: 'italic', dropShadow: true, dropShadowDistance: 2, dropShadowColor: '#000' });

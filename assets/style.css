@@ -21,9 +21,9 @@ body {
     align-items: center;
     justify-content: center;
     background: none;
-    border: 12px solid #ffcc00;
+    border: 12px solid #00ff00;
     border-radius: 32px;
-    box-shadow: 0 0 40px 8px #222, 0 0 0 8px #333 inset;
+    box-shadow: 0 0 40px 8px rgba(0, 255, 0, 0.4), 0 0 0 8px #00cc00 inset;
     padding: 0;
 }
 
@@ -51,24 +51,43 @@ body {
 
 #hud {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    color: #fff;
-    font-size: 24px;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color: #00ff00;
+    font-size: 12px;
+    font-family: 'Press Start 2P', cursive, 'Courier New', Courier, monospace;
     z-index: 1;
+    background-color: rgba(0, 50, 0, 0.2);
+    padding: 8px 12px;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #00ff00;
 }
 
-#score, #lives {
-    margin-bottom: 10px;
+#hud div {
+    margin-bottom: 0;
+    margin-right: 15px;
+}
+
+#hud div:last-child {
+    margin-right: 0;
+}
+
+#score, #lives, #nukes, #buildings {
+    margin-bottom: 0;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
-#score-value, #lives-value {
+#score-value, #lives-value, #nukes-value, #buildings-value {
     display: inline-block;
     transition: transform 0.2s cubic-bezier(.68,-0.55,.27,1.55);
 }
 .hud-pop {
-    transform: scale(1.6);
+    transform: scale(1.2);
 }
 
 #gameover-container {
