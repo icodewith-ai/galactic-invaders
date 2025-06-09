@@ -20,6 +20,8 @@ let soundOn = true; // Sound toggle state
 // Input state variables (global, but reset by resetGameState)
 let keys = {};
 let canShoot = true;
+let canNormalShoot = true; // New: Cooldown for normal fire
+let normalShootTimer = 0; // New: Timer for normal fire cooldown
 let rapidFire = false;
 let rapidFireNotified = false;
 const RAPID_FIRE_INTERVAL = 6; // frames between shots when holding
@@ -126,9 +128,12 @@ window.addEventListener('keydown', (e) => {
         soundOn = !soundOn;
     }
     // Only allow shooting if game started and not game over
-    if (gameStarted && !gameOver && (e.key === ' ' && (canShoot || rapidFireActive))) {
+    if (gameStarted && !gameOver && e.key === ' ' && (canNormalShoot || rapidFireActive)) {
         shootBullet();
-        canShoot = false;
+        if (!rapidFireActive) {
+            canNormalShoot = false; // Apply cooldown only for normal fire
+            normalShootTimer = 0; // Start the cooldown timer
+        }
     }
     // Only allow nuke if game started and not game over
     if (gameStarted && !gameOver && e.key.toLowerCase() === 'q' && nukes > 0) {
@@ -514,9 +519,11 @@ function resetGameState() {
     gameStarted = false; // Important for title screen flow
     pendingGameOver = false; // Reset the pending game over flag
 
-    // Reset input state (clear held keys)
+    // Reset input states
     keys = {};
     canShoot = true;
+    canNormalShoot = true; // Reset normal fire ability
+    normalShootTimer = 0; // Reset normal fire timer
     rapidFire = false;
     rapidFireNotified = false;
     rapidFireTimer = 0;
@@ -765,6 +772,15 @@ app.ticker.add(() => {
         }
     } else {
         rapidFireTimer = RAPID_FIRE_INTERVAL;
+    }
+
+    // Normal fire cooldown logic
+    if (!canNormalShoot) {
+        normalShootTimer++;
+        if (normalShootTimer >= GAME_RULES.normalFireCooldown) {
+            canNormalShoot = true;
+            normalShootTimer = 0;
+        }
     }
 
     updateDifficulty();
