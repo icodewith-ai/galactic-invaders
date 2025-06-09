@@ -13,22 +13,6 @@ const app = new PIXI.Application({
 const gameContainer = document.getElementById('game-container');
 gameContainer.appendChild(app.view);
 
-// Draw a simple city/base at the bottom of the screen
-const city = new PIXI.Graphics();
-city.clear();
-city.beginFill(0x8888ff);
-city.drawRect(0, GAME_HEIGHT - 30, GAME_WIDTH, 30); // Main base spans full width
-city.endFill();
-// Add some buildings spaced across the width
-city.beginFill(0xcccccc);
-city.drawRect(40, GAME_HEIGHT - 60, 40, 30);
-city.drawRect(160, GAME_HEIGHT - 50, 30, 20);
-city.drawRect(320, GAME_HEIGHT - 65, 50, 35);
-city.drawRect(480, GAME_HEIGHT - 55, 35, 25);
-city.drawRect(650, GAME_HEIGHT - 60, 60, 30);
-city.endFill();
-app.stage.addChild(city);
-
 // Player setup
 const PLAYER_WIDTH = 60;
 const PLAYER_HEIGHT = 30;
@@ -547,6 +531,38 @@ function startGame() {
             player.filters = [];
         }
     }
+
+    // Draw a simple city/base at the bottom of the screen
+    const city = new PIXI.Graphics();
+    city.clear();
+    city.beginFill(0x8888ff);
+    city.drawRect(0, GAME_HEIGHT - 30, GAME_WIDTH, 30); // Main base spans full width
+    city.endFill();
+    // Add random buildings
+    city.beginFill(0xcccccc);
+    const minBuildings = GAME_RULES.buildings.min;
+    const maxBuildings = GAME_RULES.buildings.max;
+    const numBuildings = Math.floor(Math.random() * (maxBuildings - minBuildings + 1)) + minBuildings;
+    const minWidth = 25;
+    const maxWidth = 60;
+    const minHeight = 20;
+    const maxHeight = 40;
+    const margin = 10;
+    let usedRanges = [];
+    for (let i = 0; i < numBuildings; i++) {
+        let width = Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
+        let height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+        let x;
+        let attempts = 0;
+        do {
+            x = Math.floor(Math.random() * (GAME_WIDTH - width - margin));
+            attempts++;
+        } while (usedRanges.some(r => x < r.end + margin && x + width > r.start - margin) && attempts < 20);
+        usedRanges.push({start: x, end: x + width});
+        city.drawRect(x, GAME_HEIGHT - 30 - height, width, height);
+    }
+    city.endFill();
+    app.stage.addChild(city);
 }
 
 // At the end of the file, call loadGameRules() instead of running game logic immediately
