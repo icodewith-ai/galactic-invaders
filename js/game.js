@@ -55,6 +55,23 @@ const player = new PIXI.Graphics();
 const starGfx = new PIXI.Graphics();
 const cityBase = new PIXI.Graphics();
 
+// Player glow filter (global)
+const playerGlowFilter = new GlowFilter({
+    color: 0x00ff00, // Default green glow
+    distance: 20,
+    outerStrength: 0.5, // Initial low strength, will be animated
+    innerStrength: 0.5,
+    quality: 0.5
+});
+player.filters = [playerGlowFilter]; // Assign the filter once
+
+// Glow breathing variables (global)
+let glowBreathingFactor = 0.5; // Current outer strength
+let glowBreathingDirection = 1; // 1 for increasing, -1 for decreasing
+const GLOW_BREATHING_SPEED = 0.03; // Speed of the pulsation
+const GLOW_MIN_STRENGTH = 0.8; // Minimum outer strength
+const GLOW_MAX_STRENGTH = 2.5; // Maximum outer strength
+
 // Game Constants (can be moved to GAME_RULES if needed)
 const PLAYER_WIDTH = 60;
 const PLAYER_HEIGHT = 30;
@@ -88,7 +105,7 @@ for (let i = 0; i < STAR_COUNT; i++) {
 }
 
 // City and Buildings setup (drawing only, position set in resetGameState)
-cityBase.beginFill(0x8888ff);
+cityBase.beginFill(0xFF00FF);
 cityBase.drawRect(0, GAME_HEIGHT - 30, GAME_WIDTH, 30); // Main base spans full width
 
 // Sound effects (loaded here, or could be preloaded once globally)
@@ -272,7 +289,7 @@ function showGameOver() {
 function showTitleScreen() {
     titleScreen = new PIXI.Container();
     const titleStyle = new PIXI.TextStyle({
-        fill: '#fff', fontSize: 64, fontWeight: 'bold', stroke: '#00f', strokeThickness: 8, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#000'
+        fill: '#fff', fontSize: 64, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 8, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC'
     });
     const title = new PIXI.Text('Galactic Invaders', titleStyle);
     title.anchor.set(0.5);
@@ -288,7 +305,7 @@ function showTitleScreen() {
     titleScreen.addChild(credit);
 
     const headerStyle = new PIXI.TextStyle({
-        fill: '#fff', fontSize: 28, fontWeight: 'bold', stroke: '#00f', strokeThickness: 8, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#000'
+        fill: '#fff', fontSize: 28, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 8, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC'
     });
     const header = new PIXI.Text('Instructions', headerStyle);
     header.anchor.set(0.5);
@@ -361,11 +378,18 @@ function resetGameState() {
         usedRanges.push({start: x, end: x + width});
 
         const building = new PIXI.Graphics();
-        building.beginFill(0xcccccc);
+        building.beginFill(0x00FFFF); // Changed building color to Cyan
         building.drawRect(0, 0, width, height);
         building.endFill();
         building.x = x;
         building.y = GAME_HEIGHT - 30 - height;
+        building.filters = [new GlowFilter({
+            color: 0x00FFFF, // Cyan glow color
+            distance: 10,
+            outerStrength: 1,
+            innerStrength: 0.2,
+            quality: 0.5
+        })];
         app.stage.addChild(building);
         buildings.push(building);
     }
@@ -401,7 +425,12 @@ function resetGameState() {
     // Reset player position and glow
     player.x = GAME_WIDTH / 2;
     player.y = PLAYER_MAX_Y;
-    player.filters = []; // Remove glow
+
+    // Reset glow breathing state
+    glowBreathingFactor = GLOW_MIN_STRENGTH;
+    glowBreathingDirection = 1;
+    playerGlowFilter.color = 0x00ff00; // Ensure default green color
+    playerGlowFilter.outerStrength = glowBreathingFactor; // Set initial strength
 
     // Hide game over screen
     gameoverContainer.style.display = 'none';
@@ -429,15 +458,13 @@ function useNuke() {
 
 function updateRapidFireGlow() {
     if (rapidFireActive) {
-        player.filters = [new GlowFilter({
-            color: 0x00ffff,
-            distance: 20,
-            outerStrength: 2,
-            innerStrength: 0.5,
-            quality: 0.5
-        })];
+        // Change existing glow color to cyan when rapid fire is active
+        playerGlowFilter.color = 0x00ffff;
+        playerGlowFilter.outerStrength = GLOW_MAX_STRENGTH; // Set to max strength when active
     } else {
-        player.filters = [];
+        // Revert to default green glow when rapid fire is inactive
+        playerGlowFilter.color = 0x00ff00; // Default green glow
+        // The outerStrength will be controlled by the breathing animation in the ticker
     }
 }
 
@@ -604,6 +631,20 @@ app.ticker.add(() => {
     if (pendingGameOver && explosions.length === 0) {
         gameOver = true;
         showGameOver();
+    }
+
+    // Player glow breathing animation (only when rapid fire is not active)
+    if (!rapidFireActive) {
+        glowBreathingFactor += glowBreathingDirection * GLOW_BREATHING_SPEED;
+
+        if (glowBreathingFactor > GLOW_MAX_STRENGTH) {
+            glowBreathingFactor = GLOW_MAX_STRENGTH;
+            glowBreathingDirection = -1;
+        } else if (glowBreathingFactor < GLOW_MIN_STRENGTH) {
+            glowBreathingFactor = GLOW_MIN_STRENGTH;
+            glowBreathingDirection = 1;
+        }
+        playerGlowFilter.outerStrength = glowBreathingFactor;
     }
 
     // Rapid fire logic
