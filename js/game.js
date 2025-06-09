@@ -288,29 +288,32 @@ function showGameOver() {
 
 function showTitleScreen() {
     titleScreen = new PIXI.Container();
-    const titleStyle = new PIXI.TextStyle({
-        fill: '#fff', fontSize: 64, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 8, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC'
-    });
-    const title = new PIXI.Text('Galactic Invaders', titleStyle);
-    title.anchor.set(0.5);
-    title.x = GAME_WIDTH / 2;
-    title.y = GAME_HEIGHT / 2 - 175;
-    titleScreen.addChild(title);
 
-    const creditStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 24, fontStyle: 'italic', dropShadow: true, dropShadowDistance: 2, dropShadowColor: '#000' });
-    const credit = new PIXI.Text('By Marcelo Lewin', creditStyle);
-    credit.anchor.set(0.5);
-    credit.x = GAME_WIDTH / 2;
-    credit.y = title.y + 50;
-    titleScreen.addChild(credit);
+    // Removed title text from canvas title screen as it's now a persistent HTML element
+    // const titleStyle = new PIXI.TextStyle({
+    //     fill: '#fff', fontSize: 64, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 8, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC'
+    // });
+    // const title = new PIXI.Text('Galactic Invaders', titleStyle);
+    // title.anchor.set(0.5);
+    // title.x = GAME_WIDTH / 2;
+    // title.y = GAME_HEIGHT / 2 - 175;
+    // titleScreen.addChild(title);
+
+    // Removed credit text from canvas title screen as it's now a persistent HTML element
+    // const creditStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 24, fontStyle: 'italic', dropShadow: true, dropShadowDistance: 2, dropShadowColor: '#000' });
+    // const credit = new PIXI.Text('By Marcelo Lewin', creditStyle);
+    // credit.anchor.set(0.5);
+    // credit.x = GAME_WIDTH / 2;
+    // credit.y = title.y + 50;
+    // titleScreen.addChild(credit);
 
     const headerStyle = new PIXI.TextStyle({
-        fill: '#fff', fontSize: 28, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 8, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC'
+        fill: '#fff', fontSize: 28, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 4, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC'
     });
     const header = new PIXI.Text('Instructions', headerStyle);
     header.anchor.set(0.5);
     header.x = GAME_WIDTH / 2;
-    header.y = credit.y + 70;
+    header.y = GAME_HEIGHT / 2 - 100; // Adjusted Y position to center instructions better
     titleScreen.addChild(header);
 
     const instStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 20, fontWeight: 'normal' });

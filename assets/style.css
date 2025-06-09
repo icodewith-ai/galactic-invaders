@@ -12,8 +12,29 @@ body {
     min-height: 100vh;
     min-width: 100vw;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+#main-title {
+    color: #FF00FF;
+    font-family: 'Press Start 2P', cursive, 'Courier New', Courier, monospace;
+    font-size: 36px;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.6), 0 0 15px rgba(255, 0, 255, 0.4);
+    margin-bottom: 5px;
+    z-index: 10;
+    text-align: center;
+}
+
+#main-title-credit {
+    color: #FF00FF;
+    font-family: 'Press Start 2P', cursive, 'Courier New', Courier, monospace;
+    font-size: 18px;
+    text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+    margin-bottom: 40px;
+    text-align: center;
+    z-index: 10;
 }
 
 #arcade-frame {
@@ -108,19 +129,20 @@ body {
 #restart-btn {
     font-size: 2rem;
     padding: 1rem 2.5rem;
-    background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);
+    background: #00ff00;
     color: #fff;
     border: none;
     border-radius: 2rem;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
     margin-top: 24px;
     display: inline-block;
 }
 #restart-btn:hover {
-    background: linear-gradient(90deg, #8f94fb 0%, #4e54c8 100%);
+    background: #00cc00;
     transform: scale(1.07);
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.6);
 }
 
 #nukes {
