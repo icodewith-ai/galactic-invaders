@@ -4,8 +4,8 @@
     "toughAlien": 300,
     "smallAlienBonus": 20
   },
-  "nukeThreshold": 1000,
-  "rapidFireThreshold": 1000,
+  "nukeThreshold": 3000,
+  "rapidFireThreshold": 2000,
   "rapidFireDuration": 5,
   "normalFireCooldown": 15,
   "alienHp": {
