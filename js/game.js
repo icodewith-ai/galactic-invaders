@@ -168,6 +168,14 @@ function initializeGame() {
 
     // Add persistent background layers first (starfield, city base, player)
     app.stage.addChildAt(starGfx, 0);
+    // Draw static stars initially for the title screen
+    starGfx.clear();
+    starGfx.beginFill(0xffffff);
+    for (const star of stars) {
+        starGfx.drawCircle(star.x, star.y, star.r);
+    }
+    starGfx.endFill();
+
     app.stage.addChild(cityBase);
     app.stage.addChild(player);
 
@@ -563,9 +571,12 @@ function updateRapidFireGlow() {
 
 // Main Game Loop (app.ticker.add) - Must be added ONLY ONCE globally
 app.ticker.add(() => {
-    if (gameOver || !gameStarted) return;
+    if (gameOver || !gameStarted) {
+        // Only animate stars if the game has started
+        return;
+    }
 
-    // Starfield animation
+    // Starfield animation - only runs when gameStarted is true
     starGfx.clear();
     starGfx.beginFill(0xffffff);
     for (const star of stars) {
@@ -576,10 +587,10 @@ app.ticker.add(() => {
     starGfx.endFill();
 
     // Player movement
-    if (keys['ArrowLeft']) { player.x -= PLAYER_SPEED; }
-    if (keys['ArrowRight']) { player.x += PLAYER_SPEED; }
-    if (keys['ArrowUp']) { player.y -= PLAYER_SPEED; }
-    if (keys['ArrowDown']) { player.y += PLAYER_SPEED; }
+    if (keys['ArrowLeft'] || keys['a']) { player.x -= PLAYER_SPEED; }
+    if (keys['ArrowRight'] || keys['d']) { player.x += PLAYER_SPEED; }
+    if (keys['ArrowUp'] || keys['w']) { player.y -= PLAYER_SPEED; }
+    if (keys['ArrowDown'] || keys['s']) { player.y += PLAYER_SPEED; }
     if (player.x < PLAYER_WIDTH/2) player.x = PLAYER_WIDTH/2;
     if (player.x > GAME_WIDTH - PLAYER_WIDTH/2) player.x = GAME_WIDTH - PLAYER_WIDTH/2;
     if (player.y < PLAYER_MIN_Y) player.y = PLAYER_MIN_Y;
