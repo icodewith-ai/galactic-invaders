@@ -31,5 +31,15 @@
     <div id="source-link" style="text-align: center; margin-top: 20px; color: #fff; font-family: 'Press Start 2P', cursive; font-size: 12px;">
         <br/>Want the source? Check out <a href="https://github.com/bymarcelolewin/Galactic-Invaders" target="_blank" style="color: #00ff00; text-decoration: underline;">GitHub</a>.
     </div>
+    <div id="version-info" style="text-align: center; color: #aaa; font-family: 'Press Start 2P', cursive; font-size: 10px; margin-top: 5px;"></div>
+
+    <script>
+        fetch('package.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('version-info').textContent = 'Version: ' + data.version;
+            })
+            .catch(error => console.error('Error loading package.json:', error));
+    </script>
 </body>
 </html> 
