@@ -384,6 +384,83 @@ function resetGameState() {
         building.beginFill(0xFFFFFF); // Changed building color to White
         building.drawRect(0, 0, width, height);
         building.endFill();
+
+        // Add uniform windows to the building in a grid pattern
+        const windowColor = 0x000000; // Black for windows
+        const windowMargin = 5; // Margin from building edge and between windows.
+        const buildingBaseHeight = 10; // Solid base at the bottom of the building
+
+        // Define absolute min/max window dimensions for aesthetic appearance
+        const absMinWindowDim = 5;
+        const absMaxWindowDim = 20; // Increased max to allow for larger proportionate windows
+
+        // Calculate available space for windows, considering margins from building edges AND the solid base
+        const availableWidthForWindows = width - 2 * windowMargin;
+        const availableHeightForWindows = height - 2 * windowMargin - buildingBaseHeight; // Subtract base height
+
+        // Determine how many windows can fit initially based on minimum window dimension
+        let numWindowsX = Math.floor(availableWidthForWindows / (absMinWindowDim + windowMargin));
+        let numWindowsY = Math.floor(availableHeightForWindows / (absMinWindowDim + windowMargin));
+
+        // Ensure at least one window in each dimension if space allows, clamp to 1 if it results in 0
+        numWindowsX = Math.max(1, numWindowsX);
+        numWindowsY = Math.max(1, numWindowsY);
+
+        // Special handling for "at least 2 windows" total:
+        // If currently only one window (1x1 grid), try to force to 2x1 or 1x2 if possible.
+        if (numWindowsX === 1 && numWindowsY === 1) {
+            // Check if there's enough space to fit two windows horizontally (2 windows + 1 margin between)
+            if (availableWidthForWindows >= (2 * absMinWindowDim + 1 * windowMargin)) {
+                numWindowsX = 2;
+            } else if (availableHeightForWindows >= (2 * absMinWindowDim + 1 * windowMargin)) {
+                // If not horizontally, check vertically
+                numWindowsY = 2;
+            }
+            // If still 1x1, it means the building is too small for 2 windows even with min size,
+            // so we'll proceed with 1 window for this small building.
+        }
+
+        // Calculate actual window dimensions to fill the space uniformly based on the determined number of windows
+        let actualWindowWidth = (availableWidthForWindows - (numWindowsX - 1) * windowMargin) / numWindowsX;
+        let actualWindowHeight = (availableHeightForWindows - (numWindowsY - 1) * windowMargin) / numWindowsY;
+
+        // Clamp actual window dimensions to aesthetic min/max to prevent extremely large or small windows due to calculation
+        actualWindowWidth = Math.min(actualWindowWidth, absMaxWindowDim);
+        actualWindowHeight = Math.min(actualWindowHeight, absMaxWindowDim);
+        actualWindowWidth = Math.max(actualWindowWidth, absMinWindowDim); // Ensure it's not smaller than min
+        actualWindowHeight = Math.max(actualWindowHeight, absMinWindowDim); // Ensure it's not smaller than min
+
+        // Check if calculated dimensions are valid and positive before drawing
+        if (numWindowsX > 0 && numWindowsY > 0 && actualWindowWidth > 0 && actualWindowHeight > 0) {
+            // Calculate starting positions to center the grid of windows within the building
+            const totalWindowsDrawWidth = numWindowsX * actualWindowWidth + (numWindowsX - 1) * windowMargin;
+            const totalWindowsDrawHeight = numWindowsY * actualWindowHeight + (numWindowsY - 1) * windowMargin;
+            const startX = (width - totalWindowsDrawWidth) / 2;
+            const startY = (height - totalWindowsDrawHeight) / 2;
+
+            // Adjust startY to account for the solid base at the bottom
+            const adjustedStartY = startY - buildingBaseHeight / 2; // Move windows up by half the base height to center in available space
+
+            for (let row = 0; row < numWindowsY; row++) {
+                for (let col = 0; col < numWindowsX; col++) {
+                    const windowX = startX + col * (actualWindowWidth + windowMargin);
+                    const windowY = adjustedStartY + row * (actualWindowHeight + windowMargin);
+                    building.beginFill(windowColor);
+                    building.drawRect(windowX, windowY, actualWindowWidth, actualWindowHeight);
+                    building.endFill();
+                }
+            }
+        } else {
+            // Fallback: if no proper grid can be formed (e.g., building too small), draw a single, proportionate window
+            const singleWindowWidth = width * 0.4; // 40% of building width
+            const singleWindowHeight = height * 0.4; // 40% of building height
+            const singleWindowX = (width - singleWindowWidth) / 2;
+            const singleWindowY = (height - singleWindowHeight) / 2 - buildingBaseHeight / 2; // Adjust for base
+            building.beginFill(windowColor);
+            building.drawRect(singleWindowX, singleWindowY, singleWindowWidth, singleWindowHeight);
+            building.endFill();
+        }
+
         building.x = x;
         building.y = GAME_HEIGHT - 30 - height;
         building.filters = [new GlowFilter({
