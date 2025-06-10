@@ -1,6 +1,14 @@
 # Release Notes
 
-## Version 0.2.0 - ew Alien, Spaceship and City Look.
+## Version 0.3.0 - Enhanced Explosions
+
+- Explosions now feature a red, pixelated starburst design with a glow effect.
+- Explosion growth and fade-out animations have been sped up.
+- Explosions are now significantly larger.
+- An explosion now occurs when an alien crashes into the player's ship and the ship resets it's position to the start.
+- The sound played when the player's ship is hit has been changed to an explosion sound.
+
+## Version 0.2.0 - New Alien, Spaceship and City Look.
 
 - Updated alien visuals to a new pixelated design.
 - Player spaceship updated to a new pixelated look.

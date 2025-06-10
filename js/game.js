@@ -284,7 +284,16 @@ function createExplosion(x, y) {
     const gfx = new PIXI.Graphics();
     gfx.x = x;
     gfx.y = y;
-    explosions.push({ gfx, radius: 10, alpha: 1 });
+    // Initialize with age, maxAge, and red glow filter
+    const explosionGlowFilter = new GlowFilter({
+        color: 0xFF0000, // Red glow
+        distance: 80, // Further increased distance for an even bigger glow
+        outerStrength: 0.5,
+        innerStrength: 0.5,
+        quality: 0.5
+    });
+    gfx.filters = [explosionGlowFilter];
+    explosions.push({ gfx, age: 0, maxAge: 20, alpha: 1, glowFilter: explosionGlowFilter }); // maxAge set to 20 frames for faster animation
     app.stage.addChild(gfx);
 }
 
@@ -767,7 +776,11 @@ app.ticker.add(() => {
             aliens.splice(j, 1);
             lives--;
             updateLivesHUD();
-            playLoseLife();
+            playExplosion();
+            createExplosion(player.x, player.y); // Add explosion at player's location
+            // Reset player position to start
+            player.x = GAME_WIDTH / 2;
+            player.y = PLAYER_MAX_Y;
             if (lives <= 0) {
                 gameOver = true;
                 showGameOver();
@@ -820,16 +833,73 @@ app.ticker.add(() => {
     // Animate explosions
     for (let i = explosions.length - 1; i >= 0; i--) {
         const exp = explosions[i];
-        exp.radius += 3;
-        exp.alpha -= 0.07;
+        exp.age++;
+        exp.alpha = 1 - (exp.age / exp.maxAge); // Linear fade out from 1 to 0
+
+        // Update glow filter alpha (strength will fade with overall alpha)
+        if (exp.glowFilter) {
+            exp.glowFilter.outerStrength = 0.5 * exp.alpha; // Link glow strength to overall alpha
+            exp.glowFilter.innerStrength = 0.5 * exp.alpha;
+        }
+
         exp.gfx.clear();
-        exp.gfx.beginFill(0xffff00, exp.alpha);
-        exp.gfx.drawCircle(0, 0, exp.radius);
-        exp.gfx.endFill();
-        if (exp.alpha <= 0) {
+
+        if (exp.alpha <= 0 || exp.age > exp.maxAge) {
             app.stage.removeChild(exp.gfx);
             explosions.splice(i, 1);
+            continue;
         }
+
+        // Draw pixelated starburst
+        const currentScale = exp.age / exp.maxAge;
+        const basePixelSize = 20; // Further increased base size for truly massive pixels and overall explosion
+
+        // Central bright pixel
+        exp.gfx.beginFill(0xFFFFFF, exp.alpha); // White core
+        const coreSize = basePixelSize * 2 * currentScale;
+        exp.gfx.drawRect(-coreSize / 2, -coreSize / 2, coreSize, coreSize);
+        exp.gfx.endFill();
+
+        // First layer of cross arms (red/orange)
+        exp.gfx.beginFill(0xFF3300, exp.alpha); // Brighter red/orange
+        const arm1Offset = basePixelSize * 1 * currentScale;
+        const arm1Size = basePixelSize * currentScale;
+        exp.gfx.drawRect(-arm1Offset - arm1Size / 2, -arm1Size / 2, arm1Size, arm1Size); // Left
+        exp.gfx.drawRect(arm1Offset - arm1Size / 2, -arm1Size / 2, arm1Size, arm1Size); // Right
+        exp.gfx.drawRect(-arm1Size / 2, -arm1Offset - arm1Size / 2, arm1Size, arm1Size); // Top
+        exp.gfx.drawRect(-arm1Size / 2, arm1Offset - arm1Size / 2, arm1Size, arm1Size); // Bottom
+        exp.gfx.endFill();
+
+        // Second layer of cross/diagonal elements (darker red)
+        exp.gfx.beginFill(0xCC0000, exp.alpha * 0.9); // Darker red, slightly more transparent
+        const arm2Offset = basePixelSize * 2.5 * currentScale;
+        const arm2Size = basePixelSize * 0.8 * currentScale;
+        // Horizontal/Vertical
+        exp.gfx.drawRect(-arm2Offset - arm2Size / 2, -arm2Size / 2, arm2Size, arm2Size);
+        exp.gfx.drawRect(arm2Offset - arm2Size / 2, -arm2Size / 2, arm2Size, arm2Size);
+        exp.gfx.drawRect(-arm2Size / 2, -arm2Offset - arm2Size / 2, arm2Size, arm2Size);
+        exp.gfx.drawRect(-arm2Size / 2, arm2Offset - arm2Size / 2, arm2Size, arm2Size);
+        // Diagonal
+        exp.gfx.drawRect(-arm2Offset * 0.7 - arm2Size / 2, -arm2Offset * 0.7 - arm2Size / 2, arm2Size, arm2Size);
+        exp.gfx.drawRect(arm2Offset * 0.7 - arm2Size / 2, -arm2Offset * 0.7 - arm2Size / 2, arm2Size, arm2Size);
+        exp.gfx.drawRect(-arm2Offset * 0.7 - arm2Size / 2, arm2Offset * 0.7 - arm2Size / 2, arm2Size, arm2Size);
+        exp.gfx.drawRect(arm2Offset * 0.7 - arm2Size / 2, arm2Offset * 0.7 - arm2Size / 2, arm2Size, arm2Size);
+        exp.gfx.endFill();
+
+        // Outer most scattered pixels (even darker red, most transparent)
+        exp.gfx.beginFill(0x990000, exp.alpha * 0.6); // Even darker red, more transparent
+        const arm3Offset = basePixelSize * 4 * currentScale;
+        const arm3Size = basePixelSize * 0.6 * currentScale;
+        exp.gfx.drawRect(-arm3Offset - arm3Size / 2, -arm3Size / 2, arm3Size, arm3Size);
+        exp.gfx.drawRect(arm3Offset - arm3Size / 2, -arm3Size / 2, arm3Size, arm3Size);
+        exp.gfx.drawRect(-arm3Size / 2, -arm3Offset - arm3Size / 2, arm3Size, arm3Size);
+        exp.gfx.drawRect(-arm3Size / 2, arm3Offset - arm3Size / 2, arm3Size, arm3Size);
+
+        exp.gfx.drawRect(-arm3Offset * 0.7 - arm3Size / 2, -arm3Offset * 0.7 - arm3Size / 2, arm3Size, arm3Size);
+        exp.gfx.drawRect(arm3Offset * 0.7 - arm3Size / 2, -arm3Offset * 0.7 - arm3Size / 2, arm3Size, arm3Size);
+        exp.gfx.drawRect(-arm3Offset * 0.7 - arm3Size / 2, arm3Offset * 0.7 - arm3Size / 2, arm3Size, arm3Size);
+        exp.gfx.drawRect(arm3Offset * 0.7 - arm3Size / 2, arm3Offset * 0.7 - arm3Size / 2, arm3Size, arm3Size);
+        exp.gfx.endFill();
     }
 
     // If game over is pending and all explosions have finished, show game over
