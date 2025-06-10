@@ -1,5 +1,11 @@
 # Release Notes
 
+## Version 0.4.0 - Phantom Alien & UI Refinements
+
+- Implemented a new "Phantom Alien" enemy type with unique spawning, movement, and bonus scoring..
+- Refined title screen to display alien types with their score values and cleaned up instructions.
+- Cleaned up Game Rules file.
+
 ## Version 0.3.0 - Enhanced Explosions
 
 - Explosions now feature a red, pixelated starburst design with a glow effect.

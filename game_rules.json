@@ -1,27 +1,33 @@
 {
   "points": {
     "normalAlien": 100,
-    "toughAlien": 300,
-    "smallAlienBonus": 20
+    "toughAlien": 300
   },
   "nukeThreshold": 3000,
   "rapidFireThreshold": 2000,
   "rapidFireDuration": 5,
-  "normalFireCooldown": 12,
+  "normalFireCooldown": 15,
   "alienHp": {
     "normal": 1,
-    "tough": 2
+    "tough": 3
   },
   "difficulty": {
-    "scorePerLevel": 500,
+    "scorePerLevel": 750,
     "spawnIntervalStart": 120,
-    "spawnIntervalMin": 40,
+    "spawnIntervalMin": 50,
     "spawnIntervalStep": 15
   },
   "startingLives": 3,
-  "alienSpeed": 1.5,
+  "alienSpeed": 1.25,
   "buildings": {
     "min": 4,
     "max": 8
+  },
+  "phantomAlien": {
+    "scoreThreshold": 2000,
+    "minSpeed": 5,
+    "maxSpeed": 10,
+    "bonusScore": 300,
+    "hp": 3
   }
 } 
