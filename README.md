@@ -1,4 +1,4 @@
-[ ![Galactic Invaders](./assets/galactic-invaders.png "Galactic Invaders") ](https://bymarcelolewin.github.io/Galactic-Invaders/)
+[ ![Galactic Invaders](./www/assets/galactic-invaders.png "Galactic Invaders") ](https://bymarcelolewin.github.io/Galactic-Invaders/)
 
 # Galactic Invaders
 
