@@ -54,6 +54,9 @@ let aliens = [];
 let explosions = [];
 let buildings = []; // Array to hold individual building graphics
 
+// New: Object pool for explosions
+let explosionPool = [];
+
 // Persistent PixiJS objects (global)
 const player = new PIXI.Graphics();
 const starGfx = new PIXI.Graphics();
@@ -180,6 +183,11 @@ window.addEventListener('keydown', (e) => {
     }
     if (e.key === 'm' || e.key === 'M') {
         soundOn = !soundOn;
+        // NEW: If sound is turned off, pause phantomSound if it's playing
+        if (!soundOn && phantomAlien && !phantomSound.paused) {
+            phantomSound.pause();
+            phantomSound.currentTime = 0;
+        }
     }
     // Only allow shooting if game started and not game over
     if (gameStarted && !gameOver && e.key === ' ' && (canNormalShoot || rapidFireActive)) {
@@ -285,18 +293,31 @@ function updateDifficulty() {
 }
 
 function createExplosion(x, y) {
-    const gfx = new PIXI.Graphics();
+    let gfx;
+    let explosionGlowFilter;
+
+    if (explosionPool.length > 0) {
+        gfx = explosionPool.pop();
+        // Assume gfx comes with a GlowFilter already in its filters array
+        explosionGlowFilter = gfx.filters[0]; // Get the existing filter
+        gfx.visible = true; // Make it visible again
+    } else {
+        gfx = new PIXI.Graphics();
+        explosionGlowFilter = new GlowFilter({
+            color: 0xFF0000, // Red glow
+            distance: 80, // Further increased distance for an even bigger glow
+            outerStrength: 0.5,
+            innerStrength: 0.5,
+            quality: 0.5
+        });
+        gfx.filters = [explosionGlowFilter]; // Attach the filter to the graphics object
+    }
+
     gfx.x = x;
     gfx.y = y;
-    // Initialize with age, maxAge, and red glow filter
-    const explosionGlowFilter = new GlowFilter({
-        color: 0xFF0000, // Red glow
-        distance: 80, // Further increased distance for an even bigger glow
-        outerStrength: 0.5,
-        innerStrength: 0.5,
-        quality: 0.5
-    });
-    gfx.filters = [explosionGlowFilter];
+    gfx.alpha = 1; // Reset alpha for new explosion
+    gfx.clear(); // Clear any previous drawing
+
     explosions.push({ gfx, age: 0, maxAge: 20, alpha: 1, glowFilter: explosionGlowFilter }); // maxAge set to 20 frames for faster animation
     app.stage.addChild(gfx);
 }
@@ -698,7 +719,15 @@ function resetGameState() {
     // Clear arrays
     bullets.length = 0;
     aliens.length = 0;
-    explosions.length = 0;
+
+    // Return active explosions to pool before clearing the array
+    for (const exp of explosions) {
+        app.stage.removeChild(exp.gfx);
+        exp.gfx.visible = false;
+        exp.gfx.clear(); // Clear graphics for reuse
+        explosionPool.push(exp.gfx);
+    }
+    explosions.length = 0; // Now clear the array
 
     // Clear and re-draw buildings (since they are created dynamically)
     for (const building of buildings) {
@@ -968,8 +997,11 @@ function spawnPhantomAlien() {
     alien.fromLeft = fromLeft;
     phantomAlien = alien;
     aliens.push(alien);
-    phantomSound.currentTime = 0;
-    phantomSound.play();
+    app.stage.addChild(alien);
+    if (soundOn) {
+        phantomSound.currentTime = 0;
+        phantomSound.play();
+    }
 }
 
 // Main Game Loop (app.ticker.add) - Must be added ONLY ONCE globally
@@ -977,7 +1009,7 @@ app.ticker.add(() => {
     if (gameOver || !gameStarted) {
         // Only animate stars if the game has started
         if (!gameStarted || gameOver) {
-            if (!phantomSound.paused) {
+            if (soundOn && !phantomSound.paused) {
                 phantomSound.pause();
                 phantomSound.currentTime = 0;
             }
@@ -1025,6 +1057,7 @@ app.ticker.add(() => {
     // Move aliens
     for (let alien of aliens) {
         alien.x += alien.vx;
+        alien.y += alien.vy;
         if (alien.isPhantom) {
             // Phantom Alien movement
             alien.y += Math.sin(alien.x * 0.05) * 2; // Zigzag motion
@@ -1033,25 +1066,27 @@ app.ticker.add(() => {
                 app.stage.removeChild(alien);
                 aliens.splice(aliens.indexOf(alien), 1);
                 phantomAlien = null;
-                phantomSound.pause();
-                phantomSound.currentTime = 0;
+                if (soundOn && !phantomSound.paused) {
+                    phantomSound.pause();
+                    phantomSound.currentTime = 0;
+                }
             }
         } else {
             // Regular alien movement
             if (alien.x < alien.alienWidth/2 || alien.x > GAME_WIDTH - alien.alienWidth/2) {
                 alien.vx *= -1;
                 alien.y += 30;
-            } else {
-                alien.y += alien.vy;
             }
         }
     }
 
     // Check for Phantom Alien spawn
-    const currentPhantomThreshold = Math.floor(score / GAME_RULES.phantomAlien.scoreThreshold);
-    if (currentPhantomThreshold > Math.floor(lastPhantomScore / GAME_RULES.phantomAlien.scoreThreshold)) {
-        spawnPhantomAlien();
-        lastPhantomScore = score;
+    if (GAME_RULES && GAME_RULES.phantomAlien && GAME_RULES.phantomAlien.scoreThreshold !== undefined) {
+        const currentPhantomThreshold = Math.floor(score / GAME_RULES.phantomAlien.scoreThreshold);
+        if (currentPhantomThreshold > Math.floor(lastPhantomScore / GAME_RULES.phantomAlien.scoreThreshold)) {
+            spawnPhantomAlien();
+            lastPhantomScore = score;
+        }
     }
 
     // Update bullet-alien collision to handle Phantom Alien points
@@ -1075,8 +1110,10 @@ app.ticker.add(() => {
                     if (alien.isPhantom) {
                         points = GAME_RULES.phantomAlien.bonusScore;
                         phantomAlien = null;
-                        phantomSound.pause();
-                        phantomSound.currentTime = 0;
+                        if (soundOn && !phantomSound.paused) {
+                            phantomSound.pause();
+                            phantomSound.currentTime = 0;
+                        }
                     } else {
                         points = alien.isTough ? GAME_RULES.points.toughAlien : GAME_RULES.points.normalAlien;
                     }
@@ -1104,8 +1141,10 @@ app.ticker.add(() => {
             aliens.splice(j, 1);
             if (alien.isPhantom) {
                 phantomAlien = null;
-                phantomSound.pause();
-                phantomSound.currentTime = 0;
+                if (soundOn && !phantomSound.paused) {
+                    phantomSound.pause();
+                    phantomSound.currentTime = 0;
+                }
             }
             lives--;
             updateLivesHUD();
@@ -1179,6 +1218,8 @@ app.ticker.add(() => {
 
         if (exp.alpha <= 0 || exp.age > exp.maxAge) {
             app.stage.removeChild(exp.gfx);
+            exp.gfx.visible = false; // Hide it
+            explosionPool.push(exp.gfx); // Return to pool
             explosions.splice(i, 1);
             continue;
         }
@@ -1262,8 +1303,6 @@ app.ticker.add(() => {
             shootBullet();
             rapidFireTimer = 0;
         }
-    } else {
-        rapidFireTimer = RAPID_FIRE_INTERVAL;
     }
 
     // Normal fire cooldown logic

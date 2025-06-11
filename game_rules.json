@@ -24,7 +24,7 @@
     "max": 8
   },
   "phantomAlien": {
-    "scoreThreshold": 2000,
+    "scoreThreshold": 100,
     "minSpeed": 5,
     "maxSpeed": 10,
     "bonusScore": 300,
