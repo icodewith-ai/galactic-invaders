@@ -153,4 +153,43 @@ body {
 #nukes {
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Secret Developer Mode Popup Styles */
+#developer-mode-popup {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 80%;
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+    z-index: 999;
+    padding: 20px;
+    color: #00ff00;
+    font-family: 'Press Start 2P', cursive, 'Courier New', Courier, monospace;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+#developer-mode-popup.active {
+    display: block;
+}
+
+#developer-mode-popup h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #FF00FF; /* Pink color for title */
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+    font-size: 1.5em;
+}
+
+#dev-rules-content {
+    white-space: pre-wrap; /* Preserves whitespace and line breaks for JSON */
+    font-size: 0.9em; /* Slightly smaller for readability */
+    line-height: 1.4;
 } 

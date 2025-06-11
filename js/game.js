@@ -16,6 +16,7 @@ gameContainer.appendChild(app.view);
 // Global variables that should persist or be initialized only once
 let GAME_RULES = null;
 let soundOn = true; // Sound toggle state
+let devModeControl = null; // NEW: Control object for developer mode
 
 // Input state variables (global, but reset by resetGameState)
 let keys = {};
@@ -173,6 +174,11 @@ phantomSound.loop = true;
 
 // Event listeners for input (attached once globally)
 window.addEventListener('keydown', (e) => {
+    // NEW: If developer mode is active, prevent normal game input
+    if (devModeControl && devModeControl.isDeveloperModeActive()) {
+        return;
+    }
+
     keys[e.key] = true;
     // Map WASD to arrow keys for movement
     switch(e.key.toLowerCase()) {
@@ -225,6 +231,10 @@ async function loadGameRules() {
     const response = await fetch('./game_rules.json');
     GAME_RULES = await response.json();
     initializeGame(); // Call a new initialization function
+    // NEW: Initialize developer mode after game rules are loaded
+    if (typeof initDevMode !== 'undefined') { // Check if devMode.js is loaded
+        devModeControl = initDevMode(app, GAME_RULES);
+    }
 }
 
 // This function will contain all game setup and state initialization that runs once after rules are loaded
@@ -1006,6 +1016,11 @@ function spawnPhantomAlien() {
 
 // Main Game Loop (app.ticker.add) - Must be added ONLY ONCE globally
 app.ticker.add(() => {
+    // NEW: If developer mode is active, stop game updates
+    if (devModeControl && devModeControl.isDeveloperModeActive()) {
+        return;
+    }
+
     if (gameOver || !gameStarted) {
         // Only animate stars if the game has started
         if (!gameStarted || gameOver) {
