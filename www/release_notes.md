@@ -1,5 +1,8 @@
 # 🛸 Release Notes – *Galactic Invaders*
 
+## 🛸 Version 0.6.0 – *iOS Framework Updates - Part 1*
+- ⚡ **Enhancement:** Set up Capacitor framework to allow the game to be deployed to the iOS app store.  More updates coming.
+
 ## 🛸 Version 0.5.6 – *Release Notes Popup*
 - 🆕 **New Feature:** Implemented a new Release Notes pop-up, accessible from the version display, allowing players to view game updates.
 

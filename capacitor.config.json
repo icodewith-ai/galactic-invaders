@@ -1,0 +1,6 @@
+{
+  "appId": "com.redpillbluepillstudios.galacticinvaders",
+  "appName": "Galactic Invaders",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
