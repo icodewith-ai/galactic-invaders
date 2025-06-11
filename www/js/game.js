@@ -1,16 +1,13 @@
 // Only declare GlowFilter from PIXI.filters, do not redeclare PIXI
 const GlowFilter = PIXI.filters.GlowFilter;
 
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 600;
+const gameContainer = document.getElementById('game-container');
 
 // Create PixiJS app (this stays global)
 const app = new PIXI.Application({
-    width: GAME_WIDTH,
-    height: GAME_HEIGHT,
+    resizeTo: gameContainer, // This makes PixiJS automatically resize the renderer to the gameContainer
     backgroundColor: 0x000000
 });
-const gameContainer = document.getElementById('game-container');
 gameContainer.appendChild(app.view);
 
 // Global variables that should persist or be initialized only once
@@ -85,8 +82,8 @@ const GLOW_MAX_STRENGTH = 5; // Maximum outer strength
 const PLAYER_WIDTH = 60;
 const PLAYER_HEIGHT = 30;
 const PLAYER_SPEED = 7;
-const PLAYER_MIN_Y = GAME_HEIGHT / 2;
-const PLAYER_MAX_Y = GAME_HEIGHT - 80 - PLAYER_HEIGHT / 2; // Player cannot go below the top of the city base
+let PLAYER_MIN_Y;
+let PLAYER_MAX_Y;
 const BULLET_SPEED = 10;
 const ALIEN_WIDTH = 40;
 const ALIEN_HEIGHT = 30;
@@ -121,51 +118,12 @@ player.drawRect(-PLAYER_WIDTH * 0.1, PLAYER_HEIGHT * 0.6, PLAYER_WIDTH * 0.08, P
 player.drawRect(PLAYER_WIDTH * 0.02, PLAYER_HEIGHT * 0.6, PLAYER_WIDTH * 0.08, PLAYER_HEIGHT * 0.1); // Right exhaust
 player.endFill();
 
-// Starfield setup (drawing only, position set in resetGameState)
+// Starfield setup (will be initialized in initializeGame)
 const STAR_COUNT = 80;
 const stars = [];
-for (let i = 0; i < STAR_COUNT; i++) {
-    stars.push({
-        x: Math.random() * GAME_WIDTH,
-        y: Math.random() * GAME_HEIGHT,
-        r: Math.random() * 1.5 + 0.5,
-        speed: Math.random() * 1.5 + 0.5
-    });
-}
 
-// City and Buildings setup (drawing only, position set in resetGameState)
-cityBase.clear();
-cityBase.beginFill(0xFF00FF); // Main pink base color
-cityBase.drawRect(0, GAME_HEIGHT - 30, GAME_WIDTH, 30);
-cityBase.endFill();
-
-// Add structured pixel lines for texture (less columns, more defined)
-// Darker pink/magenta vertical lines
-cityBase.beginFill(0xCC00CC); // Darker pink
-for (let x = 0; x < GAME_WIDTH; x += 15) {
-    cityBase.drawRect(x, GAME_HEIGHT - 30, 7, 30);
-}
-cityBase.endFill();
-
-// Lighter pink/magenta vertical lines, offset
-cityBase.beginFill(0xFF33FF); // Lighter pink
-for (let x = 7; x < GAME_WIDTH; x += 15) {
-    cityBase.drawRect(x, GAME_HEIGHT - 25, 4, 25);
-}
-cityBase.endFill();
-
-// Horizontal accent lines (e.g., a darker line near the top)
-cityBase.beginFill(0x990099); // Even darker pink/purple
-for (let x = 0; x < GAME_WIDTH; x += 10) {
-    cityBase.drawRect(x, GAME_HEIGHT - 30, 5, 2); // Thin horizontal line at the top
-}
-cityBase.endFill();
-
-cityBase.beginFill(0xCC33CC); // Medium pink/purple
-for (let x = 5; x < GAME_WIDTH; x += 10) {
-    cityBase.drawRect(x, GAME_HEIGHT - 28, 3, 1); // Another thin horizontal line
-}
-cityBase.endFill();
+// City and Buildings setup (will be initialized in initializeGame)
+// (cityBase drawing moved to initializeGame)
 
 // Sound effects (loaded here, or could be preloaded once globally)
 const shootSound = new Audio('./assets/shoot.wav');
@@ -245,12 +203,69 @@ async function loadGameRules() {
 
 // This function will contain all game setup and state initialization that runs once after rules are loaded
 function initializeGame() {
+    // Wait for app to be fully initialized with proper screen dimensions
+    if (app.screen.width === 0 || app.screen.height === 0) {
+        // Try again in the next frame
+        requestAnimationFrame(initializeGame);
+        return;
+    }
+
+    // Calculate player bounds now that we have valid screen dimensions
+    PLAYER_MIN_Y = app.screen.height / 2;
+    PLAYER_MAX_Y = app.screen.height - 80 - PLAYER_HEIGHT / 2;
+
+    // Initialize stars with valid screen dimensions
+    stars.length = 0; // Clear any existing stars
+    for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push({
+            x: Math.random() * app.screen.width,
+            y: Math.random() * app.screen.height,
+            r: Math.random() * 1.5 + 0.5,
+            speed: Math.random() * 1.5 + 0.5
+        });
+    }
+
+    // Initialize cityBase with valid screen dimensions
+    cityBase.clear();
+    cityBase.beginFill(0xFF00FF); // Main pink base color
+    cityBase.drawRect(0, app.screen.height - 30, app.screen.width, 30);
+    cityBase.endFill();
+
+    // Add structured pixel lines for texture
+    // Darker pink/magenta vertical lines
+    cityBase.beginFill(0xCC00CC); // Darker pink
+    for (let x = 0; x < app.screen.width; x += 15) {
+        cityBase.drawRect(x, app.screen.height - 30, 7, 30);
+    }
+    cityBase.endFill();
+
+    // Lighter pink/magenta vertical lines, offset
+    cityBase.beginFill(0xFF33FF); // Lighter pink
+    for (let x = 7; x < app.screen.width; x += 15) {
+        cityBase.drawRect(x, app.screen.height - 25, 4, 25);
+    }
+    cityBase.endFill();
+
+    // Horizontal accent lines
+    cityBase.beginFill(0x990099); // Even darker pink/purple
+    for (let x = 0; x < app.screen.width; x += 10) {
+        cityBase.drawRect(x, app.screen.height - 30, 5, 2); // Thin horizontal line at the top
+    }
+    cityBase.endFill();
+
+    cityBase.beginFill(0xCC33CC); // Medium pink/purple
+    for (let x = 5; x < app.screen.width; x += 10) {
+        cityBase.drawRect(x, app.screen.height - 28, 3, 1); // Another thin horizontal line
+    }
+    cityBase.endFill();
+
     // Clear previous game state if restarting
     app.stage.removeChildren(); // Clear all objects from previous game/title screen
     app.ticker.stop(); // Stop ticker to prevent multiple additions
 
     // Add persistent background layers first (starfield, city base, player)
     app.stage.addChildAt(starGfx, 0);
+    
     // Draw static stars initially for the title screen
     starGfx.clear();
     starGfx.beginFill(0xffffff);
@@ -264,6 +279,7 @@ function initializeGame() {
 
     // Reset game state and show title screen
     resetGameState();
+    showTitleScreen();
 
     app.ticker.start(); // Start the ticker once initialization is done
 }
@@ -385,7 +401,7 @@ function spawnAlien() {
     alien.drawRect(width * 0.4, -height * 0.1, width * 0.2, height * 0.3); // Right arm (vertical)
     alien.drawRect(width * 0.6, -height * 0.25, width * 0.15, height * 0.1); // Right claw (horizontal, slightly angled)
     alien.endFill();
-    alien.x = Math.random() * (GAME_WIDTH - width) + width/2;
+    alien.x = Math.random() * (app.screen.width - width) + width/2;
     alien.y = 40;
     alien.vx = speedX;
     alien.vy = speedY;
@@ -459,7 +475,7 @@ function showTitleScreen() {
     });
     const gameTitle = new PIXI.Text('Galactic Invaders', titleStyle);
     gameTitle.anchor.set(0.5);
-    gameTitle.x = GAME_WIDTH / 2;
+    gameTitle.x = app.screen.width / 2;
     gameTitle.y = 100; // Positioned at the top
     titleScreen.addChild(gameTitle);
 
@@ -468,8 +484,8 @@ function showTitleScreen() {
     });
     const header = new PIXI.Text('Instructions', headerStyle);
     header.anchor.set(0.5);
-    header.x = GAME_WIDTH / 2;
-    header.y = GAME_HEIGHT / 2 - 50; // Moved down by 20 pixels (was -130)
+    header.x = app.screen.width / 2;
+    header.y = app.screen.height / 2 - 50; // Moved down by 20 pixels (was -130)
     titleScreen.addChild(header);
 
     // Instructions text (white with pink keys)
@@ -492,7 +508,7 @@ function showTitleScreen() {
                        measureTextWidth(line1Part3Text, pinkKeyStyle) +
                        measureTextWidth(line1Part4Text, whiteInstStyle);
 
-    let line1StartX = GAME_WIDTH / 2 - line1Width / 2;
+    let line1StartX = app.screen.width / 2 - line1Width / 2;
 
     const inst1Part1 = new PIXI.Text(line1Part1Text, pinkKeyStyle);
     inst1Part1.anchor.set(0, 0.5);
@@ -524,7 +540,7 @@ function showTitleScreen() {
     const line2Text1 = '[Space]';
     const line2Text2 = ' Shoot';
     const line2Width = measureTextWidth(line2Text1, pinkKeyStyle) + measureTextWidth(line2Text2, whiteInstStyle);
-    let line2StartX = GAME_WIDTH / 2 - line2Width / 2;
+    let line2StartX = app.screen.width / 2 - line2Width / 2;
 
     const inst2Part1 = new PIXI.Text(line2Text1, pinkKeyStyle);
     inst2Part1.anchor.set(0, 0.5);
@@ -544,7 +560,7 @@ function showTitleScreen() {
     const line3Text1 = '[Q]';
     const line3Text2 = ' Use Nuke';
     const line3Width = measureTextWidth(line3Text1, pinkKeyStyle) + measureTextWidth(line3Text2, whiteInstStyle);
-    let line3StartX = GAME_WIDTH / 2 - line3Width / 2;
+    let line3StartX = app.screen.width / 2 - line3Width / 2;
 
     const inst3Part1 = new PIXI.Text(line3Text1, pinkKeyStyle);
     inst3Part1.anchor.set(0, 0.5);
@@ -564,7 +580,7 @@ function showTitleScreen() {
     const line4Text1 = '[M]';
     const line4Text2 = ' Toggle Sound';
     const line4Width = measureTextWidth(line4Text1, pinkKeyStyle) + measureTextWidth(line4Text2, whiteInstStyle);
-    let line4StartX = GAME_WIDTH / 2 - line4Width / 2;
+    let line4StartX = app.screen.width / 2 - line4Width / 2;
 
     const inst4Part1 = new PIXI.Text(line4Text1, pinkKeyStyle);
     inst4Part1.anchor.set(0, 0.5);
@@ -583,9 +599,9 @@ function showTitleScreen() {
 
     const alienSpacing = 180; // Horizontal space between each alien group
     const groupWidth = 2 * alienSpacing; // Total width from center of first to center of last alien
-    const startX = (GAME_WIDTH / 2) - (groupWidth / 2); // Calculate startX to center the group
+    const startX = (app.screen.width / 2) - (groupWidth / 2); // Calculate startX to center the group
     let currentX = startX;
-    const alienDisplayY = GAME_HEIGHT / 2 - 140; // Y position for the alien row (above instructions)
+    const alienDisplayY = app.screen.height / 2 - 140; // Y position for the alien row (above instructions)
 
     // Normal Alien
     const normalAlienPoints = GAME_RULES.points.normalAlien;
@@ -708,7 +724,7 @@ function showTitleScreen() {
 
     // Calculate total width of the prompt to center it
     const promptTotalWidth = promptPart1.width + promptPart2.width + promptPart3.width;
-    const promptStartX = GAME_WIDTH / 2 - promptTotalWidth / 2;
+    const promptStartX = app.screen.width / 2 - promptTotalWidth / 2;
 
     // Position the prompt parts
     promptPart1.anchor.set(0, 0.5);
@@ -730,8 +746,20 @@ function showTitleScreen() {
 }
 
 function hideTitleScreen() {
-    if (titleScreen) app.stage.removeChild(titleScreen);
-    titleScreen = null;
+    if (titleScreen) {
+        app.stage.removeChild(titleScreen);
+        titleScreen.destroy({ children: true });
+        titleScreen = null;
+    }
+    
+    // Ensure game objects are visible and properly set up
+    player.visible = true;
+    cityBase.visible = true;
+    
+    // Ensure the ticker is running
+    if (!app.ticker.started) {
+        app.ticker.start();
+    }
 }
 
 // Function to reset all game state (called by restartGame and at initial startup)
@@ -781,7 +809,7 @@ function resetGameState() {
         let x;
         let attempts = 0;
         do {
-            x = Math.floor(Math.random() * (GAME_WIDTH - width - margin));
+            x = Math.floor(Math.random() * (app.screen.width - width - margin));
             attempts++;
         } while (usedRanges.some(r => x < r.end + margin && x + width > r.start - margin) && attempts < 20);
         usedRanges.push({start: x, end: x + width});
@@ -869,7 +897,7 @@ function resetGameState() {
         }
 
         building.x = x;
-        building.y = GAME_HEIGHT - 30 - height;
+        building.y = app.screen.height - 30 - height;
         building.filters = [new GlowFilter({
             color: randomBuildingColor, // Use the random building color for the glow
             distance: 10,
@@ -912,7 +940,7 @@ function resetGameState() {
     updateBuildingsHUD(buildings.length); // Initialize buildings HUD
 
     // Reset player position and glow
-    player.x = GAME_WIDTH / 2;
+    player.x = app.screen.width / 2;
     player.y = PLAYER_MAX_Y;
 
     // Reset glow breathing state
@@ -924,9 +952,6 @@ function resetGameState() {
     // Hide game over screen
     gameoverContainer.style.display = 'none';
 
-    // Show title screen
-    showTitleScreen();
-
     phantomAlien = null;
     phantomAlienShootTimer = 0;
     lastPhantomScore = 0;
@@ -934,6 +959,7 @@ function resetGameState() {
 
 function restartGame() {
     resetGameState(); // Call the comprehensive reset
+    showTitleScreen(); // Show title screen after reset
 }
 
 function useNuke() {
@@ -1013,8 +1039,8 @@ function spawnPhantomAlien() {
     });
     alien.filters = [phantomGlowFilter];
     // Position at edge of screen, Y only in top half
-    alien.x = fromLeft ? -width : GAME_WIDTH + width;
-    alien.y = Math.random() * (GAME_HEIGHT / 2 - height) + height; // Only in top half
+    alien.x = fromLeft ? -width : app.screen.width + width;
+    alien.y = Math.random() * (app.screen.height / 2 - height) + height; // Only in top half
     alien.vx = speed * (fromLeft ? 1 : -1);
     alien.vy = 0;
     alien.isPhantom = true;
@@ -1056,7 +1082,7 @@ app.ticker.add(() => {
     starGfx.beginFill(0xffffff);
     for (const star of stars) {
         star.y += star.speed;
-        if (star.y > GAME_HEIGHT) star.y = 0;
+        if (star.y > app.screen.height) star.y = 0;
         starGfx.drawCircle(star.x, star.y, star.r);
     }
     starGfx.endFill();
@@ -1067,7 +1093,7 @@ app.ticker.add(() => {
     if (keys['ArrowUp'] || keys['w']) { player.y -= PLAYER_SPEED; }
     if (keys['ArrowDown'] || keys['s']) { player.y += PLAYER_SPEED; }
     if (player.x < PLAYER_WIDTH/2) player.x = PLAYER_WIDTH/2;
-    if (player.x > GAME_WIDTH - PLAYER_WIDTH/2) player.x = GAME_WIDTH - PLAYER_WIDTH/2;
+    if (player.x > app.screen.width - PLAYER_WIDTH/2) player.x = app.screen.width - PLAYER_WIDTH/2;
     if (player.y < PLAYER_MIN_Y) player.y = PLAYER_MIN_Y;
     if (player.y > PLAYER_MAX_Y) player.y = PLAYER_MAX_Y;
 
@@ -1095,7 +1121,7 @@ app.ticker.add(() => {
         if (alien.isPhantom) {
             // Phantom Alien movement
             alien.y += Math.sin(alien.x * 0.05) * 2; // Zigzag motion
-            if ((alien.fromLeft && alien.x > GAME_WIDTH + alien.alienWidth) || 
+            if ((alien.fromLeft && alien.x > app.screen.width + alien.alienWidth) || 
                 (!alien.fromLeft && alien.x < -alien.alienWidth)) {
                 app.stage.removeChild(alien);
                 aliens.splice(aliens.indexOf(alien), 1);
@@ -1107,7 +1133,7 @@ app.ticker.add(() => {
             }
         } else {
             // Regular alien movement
-            if (alien.x < alien.alienWidth/2 || alien.x > GAME_WIDTH - alien.alienWidth/2) {
+            if (alien.x < alien.alienWidth/2 || alien.x > app.screen.width - alien.alienWidth/2) {
                 alien.vx *= -1;
                 alien.y += 30;
             }
@@ -1185,7 +1211,7 @@ app.ticker.add(() => {
             playExplosion();
             createExplosion(player.x, player.y); // Add explosion at player's location
             // Reset player position to start
-            player.x = GAME_WIDTH / 2;
+            player.x = app.screen.width / 2;
             player.y = PLAYER_MAX_Y;
             if (lives <= 0) {
                 gameOver = true;
@@ -1227,7 +1253,7 @@ app.ticker.add(() => {
     for (let i = aliens.length - 1; i >= 0; i--) {
         const alien = aliens[i];
         // Collision if alien's bottom edge is below or at the city base's top edge
-        if (alien.y + alien.alienHeight / 2 >= (GAME_HEIGHT - 30)) {
+        if (alien.y + alien.alienHeight / 2 >= (app.screen.height - 30)) {
             app.stage.removeChild(alien);
             aliens.splice(i, 1);
             createExplosion(alien.x, alien.y); // Explosion at alien's position

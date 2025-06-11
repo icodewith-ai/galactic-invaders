@@ -1,6 +1,6 @@
 {
   "name": "galactic-invaders",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "A 2D retro space shooter game built with HTML, CSS, and JavaScript using PixiJS.",
   "dependencies": {
     "@capacitor/core": "^7.3.0",

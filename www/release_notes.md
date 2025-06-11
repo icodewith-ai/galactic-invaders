@@ -1,5 +1,8 @@
 # 🛸 Release Notes – *Galactic Invaders*
 
+## 🛸 Version 0.6.2 – *iOS Framework Updates - Part 3*
+- ⚡ **Enhancement:** Game is responsive to screen size now.
+
 ## 🛸 Version 0.6.1 – *iOS Framework Updates - Part 2*
 - ⚡ **Enhancement:** Removed header and footer.
 - ⚡ **Enhancement:** Add "v" key to show release notes.

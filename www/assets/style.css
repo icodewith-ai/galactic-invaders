@@ -15,6 +15,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 10px;
 }
 
 #main-title {
@@ -37,6 +38,17 @@ body {
     z-index: 10;
 }
 
+#starfield-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    overflow: hidden;
+    z-index: -1;
+}
+
 #arcade-frame {
     display: flex;
     align-items: center;
@@ -46,6 +58,11 @@ body {
     border-radius: 32px;
     box-shadow: 0 0 40px 8px rgba(0, 255, 0, 0.4), 0 0 0 8px #00cc00 inset;
     padding: 0;
+    width: 90vw;
+    height: 90vh;
+    max-width: 1200px;
+    max-height: 900px;
+    aspect-ratio: 4.0 / 3.0;
 }
 
 #game-container {
@@ -54,8 +71,11 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    width: 800px;
-    height: 600px;
+    width: 100%;
+    height: 100%;
+    max-width: calc(100% - 24px);
+    max-height: calc(100% - 24px);
+    aspect-ratio: 4 / 3;
     background: #111;
     border: none;
     border-radius: 20px;
