@@ -199,6 +199,32 @@ async function loadGameRules() {
     if (typeof initReleaseNotesMode !== 'undefined') { // Check if releaseNotesMode.js is loaded
         releaseNotesModeControl = initReleaseNotesMode(app);
     }
+
+    // Add a resize listener to handle dynamic resizing
+    window.addEventListener('resize', () => {
+        // Give the resizeTo a moment to propagate
+        setTimeout(() => {
+            if (!gameStarted) {
+                showTitleScreen();
+            }
+             // Re-initialize stars and city for new screen size
+            initializeStarsAndCity();
+
+            // reposition player
+            if(player) {
+                // Recalculate player bounds
+                PLAYER_MIN_Y = app.screen.height / 2;
+                PLAYER_MAX_Y = app.screen.height - 80 - PLAYER_HEIGHT / 2;
+
+                player.x = app.screen.width / 2;
+                player.y = app.screen.height - 100;
+            }
+
+            if(gameOver) {
+                positionGameoverContainer();
+            }
+        }, 100); 
+    });
 }
 
 // This function will contain all game setup and state initialization that runs once after rules are loaded
@@ -214,7 +240,19 @@ function initializeGame() {
     PLAYER_MIN_Y = app.screen.height / 2;
     PLAYER_MAX_Y = app.screen.height - 80 - PLAYER_HEIGHT / 2;
 
-    // Initialize stars with valid screen dimensions
+    // Initialize stars and city with valid screen dimensions
+    initializeStarsAndCity();
+    
+    // Add everything to the stage
+    app.stage.addChild(starGfx);
+    app.stage.addChild(cityBase);
+    app.stage.addChild(player);
+
+    resetGameState();
+    showTitleScreen(); // Show the title screen first
+}
+
+function initializeStarsAndCity() {
     stars.length = 0; // Clear any existing stars
     for (let i = 0; i < STAR_COUNT; i++) {
         stars.push({
@@ -248,40 +286,8 @@ function initializeGame() {
 
     // Horizontal accent lines
     cityBase.beginFill(0x990099); // Even darker pink/purple
-    for (let x = 0; x < app.screen.width; x += 10) {
-        cityBase.drawRect(x, app.screen.height - 30, 5, 2); // Thin horizontal line at the top
-    }
+    cityBase.drawRect(0, app.screen.height - 20, app.screen.width, 10);
     cityBase.endFill();
-
-    cityBase.beginFill(0xCC33CC); // Medium pink/purple
-    for (let x = 5; x < app.screen.width; x += 10) {
-        cityBase.drawRect(x, app.screen.height - 28, 3, 1); // Another thin horizontal line
-    }
-    cityBase.endFill();
-
-    // Clear previous game state if restarting
-    app.stage.removeChildren(); // Clear all objects from previous game/title screen
-    app.ticker.stop(); // Stop ticker to prevent multiple additions
-
-    // Add persistent background layers first (starfield, city base, player)
-    app.stage.addChildAt(starGfx, 0);
-    
-    // Draw static stars initially for the title screen
-    starGfx.clear();
-    starGfx.beginFill(0xffffff);
-    for (const star of stars) {
-        starGfx.drawCircle(star.x, star.y, star.r);
-    }
-    starGfx.endFill();
-
-    app.stage.addChild(cityBase);
-    app.stage.addChild(player);
-
-    // Reset game state and show title screen
-    resetGameState();
-    showTitleScreen();
-
-    app.ticker.start(); // Start the ticker once initialization is done
 }
 
 // Function Definitions
@@ -465,283 +471,214 @@ function showGameOver() {
 }
 
 function showTitleScreen() {
+    // If title screen already exists, remove it before creating a new one
+    if (titleScreen) {
+        app.stage.removeChild(titleScreen);
+        titleScreen.destroy({ children: true });
+    }
+    
     titleScreen = new PIXI.Container();
+
+    // Responsive scaling factor with a minimum value to prevent text from becoming too small
+    const rawScale = Math.min(app.screen.width / 800, app.screen.height / 600);
+    const scale = Math.max(0.65, rawScale);
+
+    // Define equal top and bottom buffers, then evenly space the 4 content rows
+    const topBuffer = app.screen.height * 0.15;
+    const bottomBuffer = app.screen.height * 0.15;
+    const contentAreaHeight = app.screen.height - topBuffer - bottomBuffer;
+    const rowSpacing = contentAreaHeight / 5; // 5 spaces between/around 4 rows
+    
+    const y_row1 = topBuffer;           // Title
+    const y_row2 = topBuffer + 100;       // Aliens
+    const y_row3 = topBuffer + 200;       // Instructions Header
+    const y_row4 = topBuffer + 500;       // Start prompt
 
     // Add Galactic Invaders title at the top
     const titleStyle = new PIXI.TextStyle({
-        fill: '#FF00FF', fontSize: 36, fontWeight: 'bold', stroke: '#FFFFFF', strokeThickness: 2, 
-        dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC',
+        fill: '#FF00FF', fontSize: 36 * scale, fontWeight: 'bold', stroke: '#FFFFFF', strokeThickness: 2, 
+        dropShadow: true, dropShadowDistance: 4 * scale, dropShadowColor: '#CC00CC',
         fontFamily: 'Press Start 2P, cursive, Courier New, Courier, monospace'
     });
+    
     const gameTitle = new PIXI.Text('Galactic Invaders', titleStyle);
     gameTitle.anchor.set(0.5);
     gameTitle.x = app.screen.width / 2;
-    gameTitle.y = 100; // Positioned at the top
+    gameTitle.y = y_row1; 
     titleScreen.addChild(gameTitle);
 
     const headerStyle = new PIXI.TextStyle({
-        fill: '#fff', fontSize: 28, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 4, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC'
+        fill: '#fff', fontSize: 28 * scale, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 4, dropShadow: true, dropShadowDistance: 4 * scale, dropShadowColor: '#CC00CC'
     });
     const header = new PIXI.Text('Instructions', headerStyle);
     header.anchor.set(0.5);
     header.x = app.screen.width / 2;
-    header.y = app.screen.height / 2 - 50; // Moved down by 20 pixels (was -130)
+    header.y = y_row3;
     titleScreen.addChild(header);
 
     // Instructions text (white with pink keys)
-    const whiteInstStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 20, fontWeight: 'normal' });
-    const pinkKeyStyle = new PIXI.TextStyle({ fill: 0xFF00FF, fontSize: 20, fontWeight: 'normal' });
+    const whiteInstStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 20 * scale, fontWeight: 'normal' });
+    const pinkKeyStyle = new PIXI.TextStyle({ fill: 0xFF00FF, fontSize: 20 * scale, fontWeight: 'normal' });
 
-    let currentY = header.y + 40; // This offset remains consistent relative to the header
+    let currentY = header.y + 50 * scale;
 
     // Helper to measure text width
     const measureTextWidth = (text, style) => new PIXI.Text(text, style).width;
 
+    // A helper function to create and position a line of text
+    const createInstructionLine = (parts, y) => {
+        const totalWidth = parts.reduce((width, part) => width + measureTextWidth(part.text, part.style), 0);
+        let currentX = app.screen.width / 2 - totalWidth / 2;
+
+        parts.forEach(part => {
+            const textObj = new PIXI.Text(part.text, part.style);
+            textObj.anchor.set(0, 0.5);
+            textObj.x = currentX;
+            textObj.y = y;
+            titleScreen.addChild(textObj);
+            currentX += textObj.width;
+        });
+    };
+
     // Line 1: Arrows + WASD + Move
-    const line1Part1Text = '← ↑ → ↓';
-    const line1Part2Text = ' or ';
-    const line1Part3Text = '[WASD]';
-    const line1Part4Text = ' Move';
-
-    const line1Width = measureTextWidth(line1Part1Text, pinkKeyStyle) +
-                       measureTextWidth(line1Part2Text, whiteInstStyle) +
-                       measureTextWidth(line1Part3Text, pinkKeyStyle) +
-                       measureTextWidth(line1Part4Text, whiteInstStyle);
-
-    let line1StartX = app.screen.width / 2 - line1Width / 2;
-
-    const inst1Part1 = new PIXI.Text(line1Part1Text, pinkKeyStyle);
-    inst1Part1.anchor.set(0, 0.5);
-    inst1Part1.x = line1StartX;
-    inst1Part1.y = currentY;
-    titleScreen.addChild(inst1Part1);
-
-    const inst1Part2 = new PIXI.Text(line1Part2Text, whiteInstStyle);
-    inst1Part2.anchor.set(0, 0.5);
-    inst1Part2.x = inst1Part1.x + inst1Part1.width;
-    inst1Part2.y = currentY;
-    titleScreen.addChild(inst1Part2);
-
-    const inst1Part3 = new PIXI.Text(line1Part3Text, pinkKeyStyle);
-    inst1Part3.anchor.set(0, 0.5);
-    inst1Part3.x = inst1Part2.x + inst1Part2.width;
-    inst1Part3.y = currentY;
-    titleScreen.addChild(inst1Part3);
-
-    const inst1Part4 = new PIXI.Text(line1Part4Text, whiteInstStyle);
-    inst1Part4.anchor.set(0, 0.5);
-    inst1Part4.x = inst1Part3.x + inst1Part3.width;
-    inst1Part4.y = currentY;
-    titleScreen.addChild(inst1Part4);
-
-    currentY += 25; // Move to next line
+    createInstructionLine([
+        { text: '← ↑ → ↓', style: pinkKeyStyle },
+        { text: ' or ', style: whiteInstStyle },
+        { text: '[WASD]', style: pinkKeyStyle },
+        { text: ' Move', style: whiteInstStyle }
+    ], currentY);
+    currentY += 30 * scale;
 
     // Line 2: [Space] Shoot
-    const line2Text1 = '[Space]';
-    const line2Text2 = ' Shoot';
-    const line2Width = measureTextWidth(line2Text1, pinkKeyStyle) + measureTextWidth(line2Text2, whiteInstStyle);
-    let line2StartX = app.screen.width / 2 - line2Width / 2;
-
-    const inst2Part1 = new PIXI.Text(line2Text1, pinkKeyStyle);
-    inst2Part1.anchor.set(0, 0.5);
-    inst2Part1.x = line2StartX;
-    inst2Part1.y = currentY;
-    titleScreen.addChild(inst2Part1);
-
-    const inst2Part2 = new PIXI.Text(line2Text2, whiteInstStyle);
-    inst2Part2.anchor.set(0, 0.5);
-    inst2Part2.x = inst2Part1.x + inst2Part1.width;
-    inst2Part2.y = currentY;
-    titleScreen.addChild(inst2Part2);
-
-    currentY += 25; // Move to next line
+    createInstructionLine([
+        { text: '[Space]', style: pinkKeyStyle },
+        { text: ' Shoot', style: whiteInstStyle }
+    ], currentY);
+    currentY += 30 * scale;
 
     // Line 3: [Q] Use Nuke
-    const line3Text1 = '[Q]';
-    const line3Text2 = ' Use Nuke';
-    const line3Width = measureTextWidth(line3Text1, pinkKeyStyle) + measureTextWidth(line3Text2, whiteInstStyle);
-    let line3StartX = app.screen.width / 2 - line3Width / 2;
-
-    const inst3Part1 = new PIXI.Text(line3Text1, pinkKeyStyle);
-    inst3Part1.anchor.set(0, 0.5);
-    inst3Part1.x = line3StartX;
-    inst3Part1.y = currentY;
-    titleScreen.addChild(inst3Part1);
-
-    const inst3Part2 = new PIXI.Text(line3Text2, whiteInstStyle);
-    inst3Part2.anchor.set(0, 0.5);
-    inst3Part2.x = inst3Part1.x + inst3Part1.width;
-    inst3Part2.y = currentY;
-    titleScreen.addChild(inst3Part2);
-
-    currentY += 25; // Move to next line
+    createInstructionLine([
+        { text: '[Q]', style: pinkKeyStyle },
+        { text: ' Use Nuke', style: whiteInstStyle }
+    ], currentY);
+    currentY += 30 * scale;
 
     // Line 4: [M] Toggle Sound
-    const line4Text1 = '[M]';
-    const line4Text2 = ' Toggle Sound';
-    const line4Width = measureTextWidth(line4Text1, pinkKeyStyle) + measureTextWidth(line4Text2, whiteInstStyle);
-    let line4StartX = app.screen.width / 2 - line4Width / 2;
+    createInstructionLine([
+        { text: '[M]', style: pinkKeyStyle },
+        { text: ' Toggle Sound', style: whiteInstStyle }
+    ], currentY);
 
-    const inst4Part1 = new PIXI.Text(line4Text1, pinkKeyStyle);
-    inst4Part1.anchor.set(0, 0.5);
-    inst4Part1.x = line4StartX;
-    inst4Part1.y = currentY;
-    titleScreen.addChild(inst4Part1);
+    // Display Alien Information
+    const alienInfoStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 16 * scale, fontWeight: 'normal' });
+    const alienSpacing = 180 * scale;
+    const groupWidth = 2 * alienSpacing;
+    const startX = (app.screen.width / 2) - (groupWidth / 2);
+    let currentAlienX = startX;
+    const alienDisplayY = y_row2;
 
-    const inst4Part2 = new PIXI.Text(line4Text2, whiteInstStyle);
-    inst4Part2.anchor.set(0, 0.5);
-    inst4Part2.x = inst4Part1.x + inst4Part1.width;
-    inst4Part2.y = currentY;
-    titleScreen.addChild(inst4Part2);
-
-    // Display Alien Information - Now horizontally arranged above instructions
-    const alienInfoStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 16, fontWeight: 'normal' }); // Slightly smaller font for horizontal display
-
-    const alienSpacing = 180; // Horizontal space between each alien group
-    const groupWidth = 2 * alienSpacing; // Total width from center of first to center of last alien
-    const startX = (app.screen.width / 2) - (groupWidth / 2); // Calculate startX to center the group
-    let currentX = startX;
-    const alienDisplayY = app.screen.height / 2 - 140; // Y position for the alien row (above instructions)
+    // Function to create an alien graphic
+    const createAlienGraphic = (color, scaleFactor) => {
+        const alien = new PIXI.Graphics();
+        const width = ALIEN_WIDTH * scaleFactor;
+        const height = ALIEN_HEIGHT * scaleFactor;
+        alien.beginFill(color);
+        alien.drawRect(-width * 0.4, -height * 0.3, width * 0.8, height * 0.6);
+        alien.drawRect(-width * 0.3, -height * 0.5, width * 0.6, height * 0.2);
+        alien.endFill();
+        alien.beginFill(color); alien.drawRect(-width * 0.3, -height * 0.6, width * 0.08, height * 0.15); alien.endFill();
+        alien.beginFill(0xFFFFFF); alien.drawRect(-width * 0.26 - (width * 0.08 / 2), -height * 0.6 - (width * 0.08 / 2), width * 0.16, width * 0.16); alien.endFill();
+        alien.beginFill(0x000000); alien.drawRect(-width * 0.26 - (width * 0.04 / 2), -height * 0.6 - (width * 0.04 / 2), width * 0.08, width * 0.08); alien.endFill();
+        alien.beginFill(color); alien.drawRect(width * 0.22, -height * 0.6, width * 0.08, height * 0.15); alien.endFill();
+        alien.beginFill(0xFFFFFF); alien.drawRect(width * 0.26 - (width * 0.08 / 2), -height * 0.6 - (width * 0.08 / 2), width * 0.16, width * 0.16); alien.endFill();
+        alien.beginFill(0x000000); alien.drawRect(width * 0.26 - (width * 0.04 / 2), -height * 0.6 - (width * 0.04 / 2), width * 0.08, width * 0.08); alien.endFill();
+        alien.beginFill(color); alien.drawRect(-width * 0.6, -height * 0.1, width * 0.2, height * 0.3); alien.endFill();
+        alien.beginFill(color); alien.drawRect(-width * 0.75, -height * 0.25, width * 0.15, height * 0.1); alien.endFill();
+        alien.beginFill(color); alien.drawRect(width * 0.4, -height * 0.1, width * 0.2, height * 0.3); alien.endFill();
+        alien.beginFill(color); alien.drawRect(width * 0.6, -height * 0.25, width * 0.15, height * 0.1); alien.endFill();
+        return alien;
+    };
 
     // Normal Alien
     const normalAlienPoints = GAME_RULES.points.normalAlien;
-    const normalAlienGraphic = new PIXI.Graphics();
-    {
-        const width = ALIEN_WIDTH * 0.6; // Increased size
-        const height = ALIEN_HEIGHT * 0.6; // Increased size
-        const color = ALIEN_COLORS[0];
-        normalAlienGraphic.beginFill(color);
-        normalAlienGraphic.drawRect(-width * 0.4, -height * 0.3, width * 0.8, height * 0.6);
-        normalAlienGraphic.drawRect(-width * 0.3, -height * 0.5, width * 0.6, height * 0.2);
-        normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(color); normalAlienGraphic.drawRect(-width * 0.3, -height * 0.6, width * 0.08, height * 0.15); normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(0xFFFFFF); normalAlienGraphic.drawRect(-width * 0.26 - (width * 0.08 / 2), -height * 0.6 - (width * 0.08 / 2), width * 0.16, width * 0.16); normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(0x000000); normalAlienGraphic.drawRect(-width * 0.26 - (width * 0.04 / 2), -height * 0.6 - (width * 0.04 / 2), width * 0.08, width * 0.08); normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(color); normalAlienGraphic.drawRect(width * 0.22, -height * 0.6, width * 0.08, height * 0.15); normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(0xFFFFFF); normalAlienGraphic.drawRect(width * 0.26 - (width * 0.08 / 2), -height * 0.6 - (width * 0.08 / 2), width * 0.16, width * 0.16); normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(0x000000); normalAlienGraphic.drawRect(width * 0.26 - (width * 0.04 / 2), -height * 0.6 - (width * 0.04 / 2), width * 0.08, width * 0.08); normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(color); normalAlienGraphic.drawRect(-width * 0.6, -height * 0.1, width * 0.2, height * 0.3); normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(color); normalAlienGraphic.drawRect(-width * 0.75, -height * 0.25, width * 0.15, height * 0.1); normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(color); normalAlienGraphic.drawRect(width * 0.4, -height * 0.1, width * 0.2, height * 0.3); normalAlienGraphic.endFill();
-        normalAlienGraphic.beginFill(color); normalAlienGraphic.drawRect(width * 0.6, -height * 0.25, width * 0.15, height * 0.1); normalAlienGraphic.endFill();
-    }
-    normalAlienGraphic.x = currentX;
+    const normalAlienGraphic = createAlienGraphic(ALIEN_COLORS[0], 0.6 * scale);
+    normalAlienGraphic.x = currentAlienX;
     normalAlienGraphic.y = alienDisplayY;
     titleScreen.addChild(normalAlienGraphic);
     const normalAlienText = new PIXI.Text(`${normalAlienPoints} Pts`, alienInfoStyle);
     normalAlienText.anchor.set(0.5);
-    normalAlienText.x = currentX;
-    normalAlienText.y = alienDisplayY + ALIEN_HEIGHT * 0.6 / 2 + 15; // Adjusted Y for increased size
+    normalAlienText.x = currentAlienX;
+    normalAlienText.y = alienDisplayY + (ALIEN_HEIGHT * 0.6 * scale) / 2 + (15 * scale);
     titleScreen.addChild(normalAlienText);
 
-    currentX += alienSpacing;
+    currentAlienX += alienSpacing;
 
     // Tough Alien
     const toughAlienPoints = GAME_RULES.points.toughAlien;
-    const toughAlienGraphic = new PIXI.Graphics();
-    {
-        const width = ALIEN_WIDTH * 0.75; // Increased size
-        const height = ALIEN_HEIGHT * 0.75; // Increased size
-        const color = TOUGH_ALIEN_COLOR;
-        toughAlienGraphic.beginFill(color);
-        toughAlienGraphic.drawRect(-width * 0.4, -height * 0.3, width * 0.8, height * 0.6);
-        toughAlienGraphic.drawRect(-width * 0.3, -height * 0.5, width * 0.6, height * 0.2);
-        toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(color); toughAlienGraphic.drawRect(-width * 0.3, -height * 0.6, width * 0.08, height * 0.15); toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(0xFFFFFF); toughAlienGraphic.drawRect(-width * 0.26 - (width * 0.08 / 2), -height * 0.6 - (width * 0.08 / 2), width * 0.16, width * 0.16); toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(0x000000); toughAlienGraphic.drawRect(-width * 0.26 - (width * 0.04 / 2), -height * 0.6 - (width * 0.04 / 2), width * 0.08, width * 0.08); toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(color); toughAlienGraphic.drawRect(width * 0.22, -height * 0.6, width * 0.08, height * 0.15); toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(0xFFFFFF); toughAlienGraphic.drawRect(width * 0.26 - (width * 0.08 / 2), -height * 0.6 - (width * 0.08 / 2), width * 0.16, width * 0.16); toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(0x000000); toughAlienGraphic.drawRect(width * 0.26 - (width * 0.04 / 2), -height * 0.6 - (width * 0.04 / 2), width * 0.08, width * 0.08); toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(color); toughAlienGraphic.drawRect(-width * 0.6, -height * 0.1, width * 0.2, height * 0.3); toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(color); toughAlienGraphic.drawRect(-width * 0.75, -height * 0.25, width * 0.15, height * 0.1); toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(color); toughAlienGraphic.drawRect(width * 0.4, -height * 0.1, width * 0.2, height * 0.3); toughAlienGraphic.endFill();
-        toughAlienGraphic.beginFill(color); toughAlienGraphic.drawRect(width * 0.6, -height * 0.25, width * 0.15, height * 0.1); toughAlienGraphic.endFill();
-    }
-    toughAlienGraphic.x = currentX;
+    const toughAlienGraphic = createAlienGraphic(TOUGH_ALIEN_COLOR, 0.75 * scale);
+    toughAlienGraphic.x = currentAlienX;
     toughAlienGraphic.y = alienDisplayY;
     titleScreen.addChild(toughAlienGraphic);
     const toughAlienText = new PIXI.Text(`${toughAlienPoints} Pts`, alienInfoStyle);
     toughAlienText.anchor.set(0.5);
-    toughAlienText.x = currentX;
-    toughAlienText.y = alienDisplayY + ALIEN_HEIGHT * 0.75 / 2 + 15; // Adjusted Y for increased size
+    toughAlienText.x = currentAlienX;
+    toughAlienText.y = alienDisplayY + (ALIEN_HEIGHT * 0.75 * scale) / 2 + (15 * scale);
     titleScreen.addChild(toughAlienText);
 
-    currentX += alienSpacing;
+    currentAlienX += alienSpacing;
 
     // Phantom Alien
     const phantomAlienPoints = GAME_RULES.phantomAlien.bonusScore;
     const phantomAlienGraphic = new PIXI.Graphics();
-    {
-        const width = ALIEN_WIDTH * 0.8; // Increased size
-        const height = ALIEN_HEIGHT * 0.8; // Increased size
-        phantomAlienGraphic.beginFill(0xcccccc); // Light gray
-        phantomAlienGraphic.drawEllipse(0, 0, width * 0.7, height * 0.35);
-        phantomAlienGraphic.endFill();
-        phantomAlienGraphic.beginFill(0x4fc3f7); // Blue
-        phantomAlienGraphic.drawEllipse(0, -height * 0.18, width * 0.35, height * 0.18);
-        phantomAlienGraphic.endFill();
-        phantomAlienGraphic.beginFill(0xffffff, 0.7);
-        phantomAlienGraphic.drawEllipse(width * 0.12, -height * 0.22, width * 0.09, height * 0.05);
-        phantomAlienGraphic.endFill();
-        phantomAlienGraphic.beginFill(0x222222);
-        phantomAlienGraphic.drawRect(-width * 0.18, -height * 0.05, width * 0.36, height * 0.08);
-        phantomAlienGraphic.endFill();
-        phantomAlienGraphic.beginFill(0xffeb3b);
-        for (let i = -2; i <= 2; i++) {
-            phantomAlienGraphic.drawCircle(i * width * 0.18, height * 0.18, width * 0.04);
-        }
-        phantomAlienGraphic.endFill();
-        phantomAlienGraphic.lineStyle(3, 0x000000, 1);
-        phantomAlienGraphic.drawEllipse(0, 0, width * 0.7, height * 0.35);
-        phantomAlienGraphic.drawEllipse(0, -height * 0.18, width * 0.35, height * 0.18);
-        phantomAlienGraphic.drawRect(-width * 0.18, -height * 0.05, width * 0.36, height * 0.08);
-        const phantomGlowFilter = new GlowFilter({
-            color: 0x00FFFF,
-            distance: 10,
-            outerStrength: 1,
-            innerStrength: 0.2,
-            quality: 0.5
-        });
-        phantomAlienGraphic.filters = [phantomGlowFilter];
+    const phantomWidth = ALIEN_WIDTH * 0.8 * scale;
+    const phantomHeight = ALIEN_HEIGHT * 0.8 * scale;
+    phantomAlienGraphic.beginFill(0xcccccc); // Light gray
+    phantomAlienGraphic.drawEllipse(0, 0, phantomWidth * 0.7, phantomHeight * 0.35);
+    phantomAlienGraphic.endFill();
+    phantomAlienGraphic.beginFill(0x4fc3f7); // Blue
+    phantomAlienGraphic.drawEllipse(0, -phantomHeight * 0.18, phantomWidth * 0.35, phantomHeight * 0.18);
+    phantomAlienGraphic.endFill();
+    phantomAlienGraphic.beginFill(0xffffff, 0.7);
+    phantomAlienGraphic.drawEllipse(phantomWidth * 0.12, -phantomHeight * 0.22, phantomWidth * 0.09, phantomHeight * 0.05);
+    phantomAlienGraphic.endFill();
+    phantomAlienGraphic.beginFill(0x222222);
+    phantomAlienGraphic.drawRect(-phantomWidth * 0.18, -phantomHeight * 0.05, phantomWidth * 0.36, phantomHeight * 0.08);
+    phantomAlienGraphic.endFill();
+    phantomAlienGraphic.beginFill(0xffeb3b);
+    for (let i = -2; i <= 2; i++) {
+        phantomAlienGraphic.drawCircle(i * phantomWidth * 0.18, phantomHeight * 0.18, phantomWidth * 0.04);
     }
-    phantomAlienGraphic.x = currentX;
+    phantomAlienGraphic.endFill();
+    phantomAlienGraphic.lineStyle(3 * scale, 0x000000, 1);
+    phantomAlienGraphic.drawEllipse(0, 0, phantomWidth * 0.7, phantomHeight * 0.35);
+    phantomAlienGraphic.drawEllipse(0, -phantomHeight * 0.18, phantomWidth * 0.35, phantomHeight * 0.18);
+    phantomAlienGraphic.drawRect(-phantomWidth * 0.18, -phantomHeight * 0.05, phantomWidth * 0.36, phantomHeight * 0.08);
+    const phantomGlowFilter = new GlowFilter({
+        color: 0x00FFFF,
+        distance: 10 * scale,
+        outerStrength: 1,
+        innerStrength: 0.2,
+        quality: 0.5
+    });
+    phantomAlienGraphic.filters = [phantomGlowFilter];
+    phantomAlienGraphic.x = currentAlienX;
     phantomAlienGraphic.y = alienDisplayY;
     titleScreen.addChild(phantomAlienGraphic);
     const phantomAlienText = new PIXI.Text(`${phantomAlienPoints} Pts`, alienInfoStyle);
     phantomAlienText.anchor.set(0.5);
-    phantomAlienText.x = currentX;
-    phantomAlienText.y = alienDisplayY + ALIEN_HEIGHT * 0.8 / 2 + 15; // Adjusted Y for increased size
+    phantomAlienText.x = currentAlienX;
+    phantomAlienText.y = alienDisplayY + (ALIEN_HEIGHT * 0.8 * scale) / 2 + (15 * scale);
     titleScreen.addChild(phantomAlienText);
 
-    // Prompt text (white with pink [Enter])
-    const whitePromptStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 24, fontStyle: 'italic' });
-    const pinkEnterStyle = new PIXI.TextStyle({ fill: 0xFF00FF, fontSize: 24, fontStyle: 'italic' });
-
-    const promptPart1 = new PIXI.Text('Press ', whitePromptStyle);
-    const promptPart2 = new PIXI.Text('[Enter]', pinkEnterStyle); // Pink [Enter]
-    const promptPart3 = new PIXI.Text(' to Start', whitePromptStyle);
-
-    // Calculate total width of the prompt to center it
-    const promptTotalWidth = promptPart1.width + promptPart2.width + promptPart3.width;
-    const promptStartX = app.screen.width / 2 - promptTotalWidth / 2;
-
-    // Position the prompt parts
-    promptPart1.anchor.set(0, 0.5);
-    promptPart1.x = promptStartX;
-    promptPart1.y = currentY + 50; // Position below instructions (currentY is already adjusted)
-    titleScreen.addChild(promptPart1);
-
-    promptPart2.anchor.set(0, 0.5);
-    promptPart2.x = promptPart1.x + promptPart1.width;
-    promptPart2.y = promptPart1.y;
-    titleScreen.addChild(promptPart2);
-
-    promptPart3.anchor.set(0, 0.5);
-    promptPart3.x = promptPart2.x + promptPart2.width;
-    promptPart3.y = promptPart1.y;
-    titleScreen.addChild(promptPart3);
-
+    // "Press Enter to Start" text, with original styling, positioned above the player
+    const whitePromptStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 24 * scale, fontStyle: 'italic' });
+    const pinkEnterStyle = new PIXI.TextStyle({ fill: 0xFF00FF, fontSize: 24 * scale, fontStyle: 'italic' });
+    createInstructionLine([
+        { text: 'Press ', style: whitePromptStyle },
+        { text: '[Enter]', style: pinkEnterStyle },
+        { text: ' to Start', style: whitePromptStyle }
+    ], y_row4);
+    
     app.stage.addChild(titleScreen);
 }
 
