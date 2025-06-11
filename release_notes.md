@@ -1,5 +1,8 @@
 # 🛸 Release Notes – *Galactic Invaders*
 
+## 🛸 Version 0.5.6 – *Release Notes Popup*
+- 🆕 **New Feature:** Implemented a new Release Notes pop-up, accessible from the version display, allowing players to view game updates.
+
 ## 🛸 Version 0.5.5 – *Developer Mode*
 - 🆕 **New Feature:** Implemented a developer mode, toggled by `Shift + 6 (^)` key, to display game rules information stored in the game rules JSON file.  Will pause the game.
 

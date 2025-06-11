@@ -27,7 +27,7 @@
     "scoreThreshold": 200,
     "minSpeed": 5,
     "maxSpeed": 10,
-    "bonusScore": 300,
+    "bonusScore": 500,
     "hp": 3
   }
 } 

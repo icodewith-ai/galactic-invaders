@@ -31,12 +31,20 @@
                 <div id="dev-rules-content"></div>
             </div>
 
+            <!-- Release Notes Popup -->
+            <div id="release-notes-popup">
+                <h2>Release Notes <span id="release-notes-close-btn">X</span></h2>
+                <div id="release-notes-content"></div>
+            </div>
+
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.8/dist/browser/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@pixi/filter-glow@4/dist/filter-glow.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="./js/game.js"></script>
     <script src="./js/devMode.js"></script>
+    <script src="./js/releaseNotesMode.js"></script>
     <div id="source-link" style="text-align: center; margin-top: 20px; color: #fff; font-family: 'Press Start 2P', cursive; font-size: 12px;">
         <br/>Want the source? Check out <a href="https://github.com/bymarcelolewin/Galactic-Invaders" target="_blank" style="color: #00ff00; text-decoration: underline;">GitHub</a>.
     </div>
@@ -46,7 +54,20 @@
         fetch('package.json')
             .then(response => response.json())
             .then(data => {
-                document.getElementById('version-info').textContent = 'Version: ' + data.version;
+                document.getElementById('version-info').textContent = 'Version: ' + data.version + '  |  ';
+                const releaseNotesLink = document.createElement('span');
+                releaseNotesLink.id = 'release-notes-link';
+                releaseNotesLink.textContent = 'Release Notes';
+                releaseNotesLink.style.cursor = 'pointer';
+                releaseNotesLink.style.color = '#00ff00';
+                releaseNotesLink.style.textDecoration = 'underline';
+                releaseNotesLink.style.marginLeft = '5px';
+                document.getElementById('version-info').appendChild(releaseNotesLink);
+
+                // NEW: Initialize release notes mode here, after the link is in the DOM
+                if (typeof initReleaseNotesMode !== 'undefined') {
+                    releaseNotesModeControl = initReleaseNotesMode(app);
+                }
             })
             .catch(error => console.error('Error loading package.json:', error));
     </script>

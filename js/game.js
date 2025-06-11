@@ -16,7 +16,8 @@ gameContainer.appendChild(app.view);
 // Global variables that should persist or be initialized only once
 let GAME_RULES = null;
 let soundOn = true; // Sound toggle state
-let devModeControl = null; // NEW: Control object for developer mode
+let devModeControl = null; // Control object for developer mode
+let releaseNotesModeControl = null; // NEW: Control object for release notes mode
 
 // Input state variables (global, but reset by resetGameState)
 let keys = {};
@@ -174,8 +175,9 @@ phantomSound.loop = true;
 
 // Event listeners for input (attached once globally)
 window.addEventListener('keydown', (e) => {
-    // NEW: If developer mode is active, prevent normal game input
-    if (devModeControl && devModeControl.isDeveloperModeActive()) {
+    // If developer mode or release notes mode is active, prevent normal game input
+    if ((devModeControl && devModeControl.isDeveloperModeActive()) || 
+        (releaseNotesModeControl && releaseNotesModeControl.isReleaseNotesModeActive())) {
         return;
     }
 
@@ -231,10 +233,14 @@ async function loadGameRules() {
     const response = await fetch('./game_rules.json');
     GAME_RULES = await response.json();
     initializeGame(); // Call a new initialization function
-    // NEW: Initialize developer mode after game rules are loaded
+    // Initialize developer mode after game rules are loaded
     if (typeof initDevMode !== 'undefined') { // Check if devMode.js is loaded
         devModeControl = initDevMode(app, GAME_RULES);
     }
+    // NEW: Initialize release notes mode after game rules are loaded
+    // Removed for repositioning: if (typeof initReleaseNotesMode !== 'undefined') { // Check if releaseNotesMode.js is loaded
+    //     releaseNotesModeControl = initReleaseNotesMode(app);
+    // }
 }
 
 // This function will contain all game setup and state initialization that runs once after rules are loaded
@@ -1016,8 +1022,9 @@ function spawnPhantomAlien() {
 
 // Main Game Loop (app.ticker.add) - Must be added ONLY ONCE globally
 app.ticker.add(() => {
-    // NEW: If developer mode is active, stop game updates
-    if (devModeControl && devModeControl.isDeveloperModeActive()) {
+    // If developer mode or release notes mode is active, stop game updates
+    if ((devModeControl && devModeControl.isDeveloperModeActive()) || 
+        (releaseNotesModeControl && releaseNotesModeControl.isReleaseNotesModeActive())) {
         return;
     }
 
