@@ -37,6 +37,16 @@ function initDevMode(appInstance, rules) {
 
     devModePopup = document.getElementById('developer-mode-popup');
     devRulesContent = document.getElementById('dev-rules-content');
+    const closeButton = document.getElementById('developer-mode-close-btn'); // Get the close button element
+
+    // Add event listener for the close button
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            toggleDevMode();
+        });
+    } else {
+        console.error('Developer mode close button element not found!');
+    }
 
     // Add event listener for the Shift + 6 (^) key to toggle developer mode
     window.addEventListener('keydown', (e) => {

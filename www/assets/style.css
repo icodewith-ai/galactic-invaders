@@ -134,20 +134,20 @@ body {
 #restart-btn {
     font-size: 2rem;
     padding: 1rem 2.5rem;
-    background: #00ff00;
+    background: #FF00FF;
     color: #fff;
     border: none;
     border-radius: 2rem;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
     cursor: pointer;
     transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
     margin-top: 24px;
     display: inline-block;
 }
 #restart-btn:hover {
-    background: #00cc00;
+    background: #CC00CC;
     transform: scale(1.07);
-    box-shadow: 0 0 25px rgba(0, 255, 0, 0.6);
+    box-shadow: 0 0 25px rgba(255, 0, 255, 0.6);
 }
 
 #nukes {
@@ -186,6 +186,26 @@ body {
     color: #FF00FF; /* Pink color for title */
     text-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
     font-size: 1.5em;
+    position: relative; /* Add this to position the X button relative to the h2 */
+}
+
+#developer-mode-close-btn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5em;
+    color: #00ff00;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+#developer-mode-close-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #FF00FF;
 }
 
 #dev-rules-content {

@@ -237,10 +237,10 @@ async function loadGameRules() {
     if (typeof initDevMode !== 'undefined') { // Check if devMode.js is loaded
         devModeControl = initDevMode(app, GAME_RULES);
     }
-    // NEW: Initialize release notes mode after game rules are loaded
-    // Removed for repositioning: if (typeof initReleaseNotesMode !== 'undefined') { // Check if releaseNotesMode.js is loaded
-    //     releaseNotesModeControl = initReleaseNotesMode(app);
-    // }
+    // Initialize release notes mode after game rules are loaded
+    if (typeof initReleaseNotesMode !== 'undefined') { // Check if releaseNotesMode.js is loaded
+        releaseNotesModeControl = initReleaseNotesMode(app);
+    }
 }
 
 // This function will contain all game setup and state initialization that runs once after rules are loaded
@@ -451,20 +451,32 @@ function showGameOver() {
 function showTitleScreen() {
     titleScreen = new PIXI.Container();
 
+    // Add Galactic Invaders title at the top
+    const titleStyle = new PIXI.TextStyle({
+        fill: '#FF00FF', fontSize: 36, fontWeight: 'bold', stroke: '#FFFFFF', strokeThickness: 2, 
+        dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC',
+        fontFamily: 'Press Start 2P, cursive, Courier New, Courier, monospace'
+    });
+    const gameTitle = new PIXI.Text('Galactic Invaders', titleStyle);
+    gameTitle.anchor.set(0.5);
+    gameTitle.x = GAME_WIDTH / 2;
+    gameTitle.y = 100; // Positioned at the top
+    titleScreen.addChild(gameTitle);
+
     const headerStyle = new PIXI.TextStyle({
         fill: '#fff', fontSize: 28, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 4, dropShadow: true, dropShadowDistance: 4, dropShadowColor: '#CC00CC'
     });
     const header = new PIXI.Text('Instructions', headerStyle);
     header.anchor.set(0.5);
     header.x = GAME_WIDTH / 2;
-    header.y = GAME_HEIGHT / 2 - 110; // Moved down by 20 pixels (was -130)
+    header.y = GAME_HEIGHT / 2 - 50; // Moved down by 20 pixels (was -130)
     titleScreen.addChild(header);
 
     // Instructions text (white with pink keys)
     const whiteInstStyle = new PIXI.TextStyle({ fill: '#fff', fontSize: 20, fontWeight: 'normal' });
     const pinkKeyStyle = new PIXI.TextStyle({ fill: 0xFF00FF, fontSize: 20, fontWeight: 'normal' });
 
-    let currentY = header.y + 50; // This offset remains consistent relative to the header
+    let currentY = header.y + 40; // This offset remains consistent relative to the header
 
     // Helper to measure text width
     const measureTextWidth = (text, style) => new PIXI.Text(text, style).width;
@@ -573,7 +585,7 @@ function showTitleScreen() {
     const groupWidth = 2 * alienSpacing; // Total width from center of first to center of last alien
     const startX = (GAME_WIDTH / 2) - (groupWidth / 2); // Calculate startX to center the group
     let currentX = startX;
-    const alienDisplayY = GAME_HEIGHT / 2 - 200; // Y position for the alien row (above instructions)
+    const alienDisplayY = GAME_HEIGHT / 2 - 140; // Y position for the alien row (above instructions)
 
     // Normal Alien
     const normalAlienPoints = GAME_RULES.points.normalAlien;

@@ -1,5 +1,11 @@
 # 🛸 Release Notes – *Galactic Invaders*
 
+## 🛸 Version 0.6.1 – *iOS Framework Updates - Part 2*
+- ⚡ **Enhancement:** Removed header and footer.
+- ⚡ **Enhancement:** Add "v" key to show release notes.
+- ⚡ **Enhancement:** Add X to dev mode pop up window.
+- ⚡ **Enhancement:** More work on the Capacitor framework to allow for iOS deployment.
+
 ## 🛸 Version 0.6.0 – *iOS Framework Updates - Part 1*
 - ⚡ **Enhancement:** Set up Capacitor framework to allow the game to be deployed to the iOS app store.  More updates coming.
 

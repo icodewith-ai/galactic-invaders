@@ -10,8 +10,6 @@
 </head>
 <body>
     <div id="starfield-background"></div>
-    <div id="main-title">Galactic Invaders</div>
-    <div id="main-title-credit">By Marcelo Lewin</div>
     <div id="arcade-frame">
         <div id="game-container">
             <div id="hud">
@@ -27,7 +25,7 @@
 
             <!-- Secret Developer Mode Popup -->
             <div id="developer-mode-popup">
-                <h2>Developer Mode</h2>
+                <h2>Developer Mode <span id="developer-mode-close-btn">X</span></h2>
                 <div id="dev-rules-content"></div>
             </div>
 
@@ -45,31 +43,5 @@
     <script src="./js/game.js"></script>
     <script src="./js/devMode.js"></script>
     <script src="./js/releaseNotesMode.js"></script>
-    <div id="source-link" style="text-align: center; margin-top: 20px; color: #fff; font-family: 'Press Start 2P', cursive; font-size: 12px;">
-        <br/>Want the source? Check out <a href="https://github.com/bymarcelolewin/Galactic-Invaders" target="_blank" style="color: #00ff00; text-decoration: underline;">GitHub</a>.
-    </div>
-    <div id="version-info" style="text-align: center; color: #aaa; font-family: 'Press Start 2P', cursive; font-size: 10px; margin-top: 5px;"></div>
-
-    <script>
-        fetch('../package.json')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('version-info').textContent = 'Version: ' + data.version + '  |  ';
-                const releaseNotesLink = document.createElement('span');
-                releaseNotesLink.id = 'release-notes-link';
-                releaseNotesLink.textContent = 'Release Notes';
-                releaseNotesLink.style.cursor = 'pointer';
-                releaseNotesLink.style.color = '#00ff00';
-                releaseNotesLink.style.textDecoration = 'underline';
-                releaseNotesLink.style.marginLeft = '5px';
-                document.getElementById('version-info').appendChild(releaseNotesLink);
-
-                // NEW: Initialize release notes mode here, after the link is in the DOM
-                if (typeof initReleaseNotesMode !== 'undefined') {
-                    releaseNotesModeControl = initReleaseNotesMode(app);
-                }
-            })
-            .catch(error => console.error('Error loading package.json:', error));
-    </script>
 </body>
 </html> 

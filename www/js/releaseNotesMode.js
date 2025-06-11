@@ -57,16 +57,7 @@ function initReleaseNotesMode(appInstance) {
 
     releaseNotesPopup = document.getElementById('release-notes-popup');
     releaseNotesContent = document.getElementById('release-notes-content');
-    const releaseNotesLink = document.getElementById('release-notes-link');
     const closeButton = document.getElementById('release-notes-close-btn'); // Get the close button element
-
-    if (releaseNotesLink) {
-        releaseNotesLink.addEventListener('click', () => {
-            toggleReleaseNotesMode();
-        });
-    } else {
-        console.error('Release Notes link element not found!');
-    }
 
     // Add event listener for the close button
     if (closeButton) {
@@ -76,6 +67,14 @@ function initReleaseNotesMode(appInstance) {
     } else {
         console.error('Release Notes close button element not found!');
     }
+
+    // Add event listener for the 'v' key to toggle release notes
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'v' || e.key === 'V') {
+            toggleReleaseNotesMode();
+            e.preventDefault();
+        }
+    });
 
     // Add event listener for the Escape key to close the popup
     window.addEventListener('keydown', (e) => {
