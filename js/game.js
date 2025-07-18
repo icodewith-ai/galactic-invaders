@@ -199,7 +199,7 @@ window.addEventListener('keyup', (e) => {
 
 // Initialize after rules are loaded
 async function loadGameRules() {
-    const response = await fetch('./game_rules.json');
+    const response = await fetch('./rules/game_rules.json');
     GAME_RULES = await response.json();
     initializeGame(); // Call a new initialization function
     // Initialize developer mode after game rules are loaded
@@ -532,7 +532,7 @@ function showTitleScreen() {
     });
     
     // Fetch version from package.json and add version display
-    fetch('../package.json')
+    fetch('./package.json')
         .then(response => response.json())
         .then(data => {
             const versionText = new PIXI.Text(`v${data.version}`, versionStyle);

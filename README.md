@@ -1,4 +1,4 @@
-[ ![Galactic Invaders](./www/assets/galactic-invaders.png "Galactic Invaders") ](https://bymarcelolewin.github.io/Galactic-Invaders/)
+[ ![Galactic Invaders](./assets/galactic-invaders.png "Galactic Invaders") ](https://bymarcelolewin.github.io/Galactic-Invaders/)
 
 # Galactic Invaders
 
@@ -66,4 +66,4 @@ I kicked off the prompting with: “Build a 2D space shooter game.” Two days l
 This project is open source and available for personal and educational use. Enjoy the game and feel free [contact me](mailto:marcelo@redpillbluepillstudios.com) with updates, bugs or feedback! 🚀 
 
 ## Release Notes
-Read the latest [release notes](./www/release_notes.md).
+Read the latest [release notes](./release_notes.md).

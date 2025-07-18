@@ -4,15 +4,16 @@ A 2D retro space shooter game built with HTML, CSS, and JavaScript using PixiJS.
 
 ## Project Structure
 
-- `www/` - Main game directory
-  - `index.html` - Main HTML file
-  - `js/` - JavaScript modules
-    - `game.js` - Main game logic
-    - `devMode.js` - Development mode functionality
-    - `releaseNotesMode.js` - Release notes display
-  - `assets/` - Game assets (images, sounds, CSS)
-  - `game_rules.json` - Game configuration
-  - `release_notes.md` - Release notes
+- `index.html` - Main HTML file
+- `js/` - JavaScript modules
+  - `game.js` - Main game logic
+  - `devMode.js` - Development mode functionality
+  - `releaseNotesMode.js` - Release notes display
+  - `helpMode.js` - Help system
+- `assets/` - Game assets (images, sounds, CSS)
+- `rules/` - Game configuration
+  - `game_rules.json` - Game rules and settings
+- `release_notes.md` - Release notes
 
 ## Technologies
 
