@@ -39,7 +39,7 @@ To play the game, you can either play it [live on the web](https://galacticinvad
 - \[Q] : Activate nuke (when available)
 - \[M] : Toggle sound on/off
 
-## Other
+### Other
 - [Shift] 6 : Toggle Developer Mode
 - [Shift] 5 : Show release notes
 - [H] : Show/Hide help
