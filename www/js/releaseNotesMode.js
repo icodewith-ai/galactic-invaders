@@ -68,9 +68,9 @@ function initReleaseNotesMode(appInstance) {
         console.error('Release Notes close button element not found!');
     }
 
-    // Add event listener for the 'v' key to toggle release notes
+    // Add event listener for the 'Shift+5' key to toggle release notes
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'v' || e.key === 'V') {
+        if (e.key === '%' && e.shiftKey) {
             toggleReleaseNotesMode();
             e.preventDefault();
         }

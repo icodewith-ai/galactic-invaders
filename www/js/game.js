@@ -490,8 +490,8 @@ function showTitleScreen() {
     const rowSpacing = contentAreaHeight / 5; // 5 spaces between/around 4 rows
     
     const y_row1 = topBuffer;           // Title
-    const y_row2 = topBuffer + 100;       // Aliens
-    const y_row3 = topBuffer + 200;       // Instructions Header
+    const y_row2 = topBuffer + 115;       // Aliens
+    const y_row3 = topBuffer + 215;       // Instructions Header
     const y_row4 = topBuffer + 500;       // Start prompt
 
     // Add Galactic Invaders title at the top
@@ -506,6 +506,26 @@ function showTitleScreen() {
     gameTitle.x = app.screen.width / 2;
     gameTitle.y = y_row1; 
     titleScreen.addChild(gameTitle);
+    
+    // Add version display below the title
+    const versionStyle = new PIXI.TextStyle({
+        fill: '#CCCCCC', fontSize: 12 * scale, fontWeight: 'normal',
+        fontFamily: 'Press Start 2P, cursive, Courier New, Courier, monospace'
+    });
+    
+    // Fetch version from package.json and add version display
+    fetch('../package.json')
+        .then(response => response.json())
+        .then(data => {
+            const versionText = new PIXI.Text(`v${data.version}`, versionStyle);
+            versionText.anchor.set(0.5);
+            versionText.x = app.screen.width / 2;
+            versionText.y = y_row1 + 50; // Position below the title
+            titleScreen.addChild(versionText);
+        })
+        .catch(error => {
+            console.error('Error fetching version:', error);
+        });
 
     const headerStyle = new PIXI.TextStyle({
         fill: '#fff', fontSize: 28 * scale, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 4, dropShadow: true, dropShadowDistance: 4 * scale, dropShadowColor: '#CC00CC'

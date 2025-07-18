@@ -1,5 +1,11 @@
 # 🛸 Release Notes – *Galactic Invaders*
 
+## 🛸 Version 0.6.3 – *Code Cleanup*
+- 🐞 **Bug Fix:** Code cleanup
+- ⚡ **Enhancement:** Changed release notes key binding from V to Shift+5.
+- ⚡ **Enhancement:** UI enhancements + documentation updates
+- ⚡ **Enhancement:** Shows version of game on title screen.
+
 ## 🛸 Version 0.6.2 – *iOS Framework Updates - Part 3*
 - ⚡ **Enhancement:** Game is responsive to screen size now.
 
