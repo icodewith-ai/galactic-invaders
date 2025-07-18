@@ -4,6 +4,14 @@ let releaseNotesContent;
 let pixiAppInstance; // To hold the PixiJS app instance
 
 function toggleReleaseNotesMode() {
+    // Check if other modes are active - if so, don't open release notes
+    if (!releaseNotesModeActive) {
+        if ((window.devModeControl && window.devModeControl.isDeveloperModeActive()) || 
+            (window.helpModeControl && window.helpModeControl.isHelpModeActive())) {
+            return; // Don't open release notes if other modes are active
+        }
+    }
+
     releaseNotesModeActive = !releaseNotesModeActive;
 
     if (releaseNotesPopup) {
@@ -33,14 +41,14 @@ async function fetchAndRenderReleaseNotes() {
             // Remove the first line (the main title) from the markdown content
             markdownText = markdownText.split('\n').slice(1).join('\n');
             releaseNotesContent.innerHTML = '<br><br>' + marked.parse(markdownText); // Convert markdown to HTML and add a line break
-            // Add instruction about Escape key
-            const escapeInstruction = document.createElement('p');
-            escapeInstruction.style.fontSize = '0.8em';
-            escapeInstruction.style.marginTop = '10px';
-            escapeInstruction.style.textAlign = 'center';
-            escapeInstruction.style.color = '#aaa';
-            escapeInstruction.textContent = '(Press Escape to close)';
-            releaseNotesContent.prepend(escapeInstruction); // Add to the top of the content
+            // Add instruction about closing
+            const closeInstruction = document.createElement('p');
+            closeInstruction.style.fontSize = '0.8em';
+            closeInstruction.style.marginTop = '10px';
+            closeInstruction.style.textAlign = 'center';
+            closeInstruction.style.color = '#aaa';
+            closeInstruction.textContent = '(Press Shift+5 again or click X to close)';
+            releaseNotesContent.prepend(closeInstruction); // Add to the top of the content
 
         } catch (error) {
             console.error('Error fetching release notes:', error);
@@ -76,13 +84,6 @@ function initReleaseNotesMode(appInstance) {
         }
     });
 
-    // Add event listener for the Escape key to close the popup
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && releaseNotesModeActive) {
-            toggleReleaseNotesMode();
-            e.preventDefault();
-        }
-    });
 
     // Return an object that game.js can use to check the release notes mode status
     return {

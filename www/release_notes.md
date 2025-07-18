@@ -1,5 +1,11 @@
 # 🛸 Release Notes – *Galactic Invaders*
 
+## 🛸 Version 0.6.4 – *Help System*
+- 🆕 **New Feature:** Added help popup window accessible with the [H] key, displaying game controls.
+- ⚡ **Enhancement:** Implemented mutual exclusion for popup windows - only one popup can be open at a time.
+- ⚡ **Enhancement:** Improved title screen.
+- 🐞 **Bug Fix:** Minor bug fixes.
+
 ## 🛸 Version 0.6.3 – *Code Cleanup*
 - 🐞 **Bug Fix:** Code cleanup
 - ⚡ **Enhancement:** Changed release notes key binding from V to Shift+5.

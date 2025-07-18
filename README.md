@@ -37,14 +37,15 @@ To play the game, you can either play it [live on the web](https://galacticinvad
 - ←, ↑, →, ↓ or \[WASD] : Move
 - \[Space] : Shoot
 - \[Q] : Activate nuke (when available)
+- \[M] : Toggle sound on/off
 
 ## Other
-- \[M] : Toggle sound on/off
 - [Shift] 6 : Toggle Developer Mode
 - [Shift] 5 : Show release notes
+- [H] : Show/Hide help
 
 ## Why I Created It
-This game was created as an experiment in learning Vibe Coding techniques and exploring AI-assisted development tools. I have zero game dev experience, so I figured, if I can, then anyone else can.  I did.  Now you can too!
+This game was created as an experiment in learning Vibe Coding techniques and exploring AI-assisted development tools. I have zero game dev experience, so I figured, if I can, then anyone else can.  I did.  So now you know you can too!
 
 ## Technologies Used
 - PixiJS for 2D rendering (via CDN)

@@ -45,8 +45,9 @@ No specific build/test commands configured. Game runs directly in browser with a
 - ←, ↑, →, ↓ or [WASD]: Move
 - [Space]: Shoot
 - [Q]: Activate nuke (when available)
+- [M]: Toggle sound on/off
 
 ### Other
-- [M]: Toggle sound on/off
 - [Shift] 6: Toggle Developer Mode
 - [Shift] 5: Show release notes
+- [H]: Show/Hide help

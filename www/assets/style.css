@@ -291,4 +291,62 @@ body {
     white-space: pre-wrap; /* Preserves whitespace and line breaks for markdown */
     font-size: 0.9em; /* Slightly smaller for readability */
     line-height: 1.4;
+}
+
+/* Help Popup Styles */
+#help-popup {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 80%;
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+    z-index: 1001; /* Higher than release notes to be on top */
+    padding: 20px;
+    color: #00ff00;
+    font-family: 'Press Start 2P', cursive, 'Courier New', Courier, monospace;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+#help-popup.active {
+    display: block;
+}
+
+#help-popup h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #FF00FF; /* Pink color for title */
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+    font-size: 1.5em;
+    position: relative; /* Add this to position the X button relative to the h2 */
+}
+
+#help-close-btn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5em;
+    color: #00ff00;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+#help-close-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #FF00FF;
+}
+
+#help-content {
+    font-size: 0.9em; /* Slightly smaller for readability */
+    line-height: 1.4;
 } 

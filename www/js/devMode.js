@@ -5,6 +5,14 @@ let pixiApp; // To hold the PixiJS app instance
 let gameRules; // To hold the GAME_RULES object
 
 function toggleDevMode() {
+    // Check if other modes are active - if so, don't open developer mode
+    if (!developerModeActive) {
+        if ((window.releaseNotesModeControl && window.releaseNotesModeControl.isReleaseNotesModeActive()) || 
+            (window.helpModeControl && window.helpModeControl.isHelpModeActive())) {
+            return; // Don't open developer mode if other modes are active
+        }
+    }
+
     developerModeActive = !developerModeActive;
 
     if (devModePopup) {

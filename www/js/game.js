@@ -15,6 +15,7 @@ let GAME_RULES = null;
 let soundOn = true; // Sound toggle state
 let devModeControl = null; // Control object for developer mode
 let releaseNotesModeControl = null; // NEW: Control object for release notes mode
+let helpModeControl = null; // Control object for help mode
 
 // Input state variables (global, but reset by resetGameState)
 let keys = {};
@@ -133,9 +134,19 @@ phantomSound.loop = true;
 
 // Event listeners for input (attached once globally)
 window.addEventListener('keydown', (e) => {
-    // If developer mode or release notes mode is active, prevent normal game input
+    // Handle help mode H key first (before checking if modes are active)
+    if (e.key === 'h' || e.key === 'H') {
+        if (typeof toggleHelpMode !== 'undefined') {
+            toggleHelpMode();
+            e.preventDefault();
+            return;
+        }
+    }
+    
+    // If developer mode, release notes mode, or help mode is active, prevent normal game input
     if ((devModeControl && devModeControl.isDeveloperModeActive()) || 
-        (releaseNotesModeControl && releaseNotesModeControl.isReleaseNotesModeActive())) {
+        (releaseNotesModeControl && releaseNotesModeControl.isReleaseNotesModeActive()) ||
+        (helpModeControl && helpModeControl.isHelpModeActive())) {
         return;
     }
 
@@ -194,10 +205,17 @@ async function loadGameRules() {
     // Initialize developer mode after game rules are loaded
     if (typeof initDevMode !== 'undefined') { // Check if devMode.js is loaded
         devModeControl = initDevMode(app, GAME_RULES);
+        window.devModeControl = devModeControl; // Make it globally available
     }
     // Initialize release notes mode after game rules are loaded
     if (typeof initReleaseNotesMode !== 'undefined') { // Check if releaseNotesMode.js is loaded
         releaseNotesModeControl = initReleaseNotesMode(app);
+        window.releaseNotesModeControl = releaseNotesModeControl; // Make it globally available
+    }
+    // Initialize help mode after game rules are loaded
+    if (typeof initHelpMode !== 'undefined') { // Check if helpMode.js is loaded
+        helpModeControl = initHelpMode(app);
+        window.helpModeControl = helpModeControl; // Make it globally available
     }
 
     // Add a resize listener to handle dynamic resizing
@@ -491,7 +509,7 @@ function showTitleScreen() {
     
     const y_row1 = topBuffer;           // Title
     const y_row2 = topBuffer + 115;       // Aliens
-    const y_row3 = topBuffer + 215;       // Instructions Header
+    const y_row3 = topBuffer + 230;       // Instructions Header
     const y_row4 = topBuffer + 500;       // Start prompt
 
     // Add Galactic Invaders title at the top
@@ -530,7 +548,7 @@ function showTitleScreen() {
     const headerStyle = new PIXI.TextStyle({
         fill: '#fff', fontSize: 28 * scale, fontWeight: 'bold', stroke: '#FF00FF', strokeThickness: 4, dropShadow: true, dropShadowDistance: 4 * scale, dropShadowColor: '#CC00CC'
     });
-    const header = new PIXI.Text('Instructions', headerStyle);
+    const header = new PIXI.Text('How to Play', headerStyle);
     header.anchor.set(0.5);
     header.x = app.screen.width / 2;
     header.y = y_row3;
@@ -585,8 +603,8 @@ function showTitleScreen() {
 
     // Line 4: [M] Toggle Sound
     createInstructionLine([
-        { text: '[M]', style: pinkKeyStyle },
-        { text: ' Toggle Sound', style: whiteInstStyle }
+        { text: '[H]', style: pinkKeyStyle },
+        { text: ' Show Help', style: whiteInstStyle }
     ], currentY);
 
     // Display Alien Information
@@ -1017,9 +1035,10 @@ function spawnPhantomAlien() {
 
 // Main Game Loop (app.ticker.add) - Must be added ONLY ONCE globally
 app.ticker.add(() => {
-    // If developer mode or release notes mode is active, stop game updates
+    // If developer mode, release notes mode, or help mode is active, stop game updates
     if ((devModeControl && devModeControl.isDeveloperModeActive()) || 
-        (releaseNotesModeControl && releaseNotesModeControl.isReleaseNotesModeActive())) {
+        (releaseNotesModeControl && releaseNotesModeControl.isReleaseNotesModeActive()) ||
+        (helpModeControl && helpModeControl.isHelpModeActive())) {
         return;
     }
 
